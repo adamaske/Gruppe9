@@ -13,5 +13,5 @@ UCLASS()
 class GROUP9_API AGroup9GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
 };
