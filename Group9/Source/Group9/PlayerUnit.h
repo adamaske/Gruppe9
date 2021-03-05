@@ -28,17 +28,24 @@ public:
 	// Called to bind functionality to input
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
-	void Interact();
-
+	//Interacting with Interactables
+	void Interact();	
 	UPROPERTY(VisibleAnywhere, Category = "Interacting")
 		class AInteractableUnit* CurrentInteractableUnit{ nullptr };
-
-	//Interacting with Interactables
 	void GetInteractableUnit(AInteractableUnit* unit);
 	void RemoveInteractableUnit(AInteractableUnit* unit);
+
 	//Spawn points
 	void GetSpawnPointStation(class ASavePointStation* station);
 	class ASavePointStation* CurrentSavePointStation{ nullptr };
-private:
-	class AInteractableUnit* InteractableUnitInRange{nullptr};
+
+	//Movement
+	void MoveForward(float);
+	void MoveRight(float);
+	FVector MovementVector{ 0.f,0.f,0.f};
+	UPROPERTY(EditAnywhere)
+	float MovementSpeed{20};
+	//Rotation
+	UPROPERTY(EditAnywhere)
+	float RotationSpeed{ 100 };
 };
