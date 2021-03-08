@@ -14,13 +14,22 @@ APlayerUnit::APlayerUnit()
 
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
 	PlayerMesh->SetupAttachment(RootComponent);
-
+	/*DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("MousePosistionDecal"));
+	DecalComponent->SetupAttachment(RootComponent);*/
 }
 
 // Called when the game starts or when spawned
 void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
+	
+	CurrentHealth = MaxHealth;
+
+	PC = Cast<APlayerController>(GetController());
+
+	if (!bUseMousePositionAsForward) {
+		//DecalComponent->Deactivate();
+	}
 	
 }
 
@@ -30,13 +39,7 @@ void APlayerUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//Movement
-	if (!MovementVector.IsZero()) {
-		FVector newLocation = GetActorLocation() + (MovementVector * MovementSpeed * DeltaTime);
-
-		SetActorLocation(newLocation);
-	}
-
-	
+	DoMovement(DeltaTime);
 }
 
 // Called to bind functionality to input
@@ -46,6 +49,62 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerUnit::Interact);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerUnit::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerUnit::MoveRight);
+	PlayerInputComponent->BindAction("TakeSomeDamageTest", IE_Pressed, this, &APlayerUnit::TakeSomeDamageTest);
+	PlayerInputComponent->BindAxis("MoveToCursor", this, &APlayerUnit::SetMoveLocation);
+}
+
+void APlayerUnit::DoMovement(float DeltaTime)
+{
+	if (bUseMousePositionAsForward) {
+		
+		FVector TempLocation = FVector(CurrentMoveLocation.X, CurrentMoveLocation.Y, GetActorLocation().Z);
+		FVector NewDirection = TempLocation - GetActorLocation();
+
+		if (FVector::Distance(GetActorLocation(), TempLocation) >= 1.f) {
+			//DecalComponent->SetWorldLocation(HitResult.Location);
+			NewDirection.Normalize();
+
+			SetActorRotation(NewDirection.Rotation());
+
+			FVector NewLocation = GetActorLocation() + (GetActorForwardVector() * MovementSpeed * DeltaTime);
+
+			SetActorLocation(NewLocation);
+		}
+		else {
+			UE_LOG(LogTemp, Error, TEXT("Distance between player and move is smaller than 1"));
+		}
+	}
+	else {
+		if (!MovementVector.IsZero()) {
+			FVector newLocation = GetActorLocation() + (MovementVector * MovementSpeed * DeltaTime);
+
+			SetActorLocation(newLocation);
+		}
+	}
+
+	
+}
+
+void APlayerUnit::MoveForward(float value)
+{
+	MovementVector.X = value;
+}
+
+void APlayerUnit::MoveRight(float value)
+{
+	MovementVector.Y = value;
+}
+
+void APlayerUnit::SetMoveLocation(float value)
+{
+	if (value == 1) {
+		if (PC) {
+			FHitResult HitResult;
+			if (PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult)) {
+				CurrentMoveLocation = HitResult.Location;
+			}
+		}
+	}
 }
 
 void APlayerUnit::Interact() {
@@ -81,15 +140,15 @@ void APlayerUnit::GetSpawnPointStation(ASavePointStation* station)
 	}
 }
 
-void APlayerUnit::MoveForward(float value)
-{
-	MovementVector.X = value;
+
+void APlayerUnit::TakeSomeDamageTest() {
+	this->TakeDamage(10);
 }
-
-void APlayerUnit::MoveRight(float value)
+void APlayerUnit::TakeDamage(float dmg)
 {
-	MovementVector.Y = value;
+	CurrentHealth -= dmg;
+	if (CurrentHealth <= 0) {
+		//Die
+	}
 }
-
-
 

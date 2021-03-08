@@ -11,8 +11,8 @@ class GROUP9_API APlayerUnit : public ACharacter
 {
 	GENERATED_BODY()
 
-	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* PlayerMesh;
+		UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* PlayerMesh;
 public:
 	// Sets default values for this character's properties
 	APlayerUnit();
@@ -21,7 +21,7 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
-public:	
+public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
@@ -29,7 +29,7 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 
 	//Interacting with Interactables
-	void Interact();	
+	void Interact();
 	UPROPERTY(VisibleAnywhere, Category = "Interacting")
 		class AInteractableUnit* CurrentInteractableUnit{ nullptr };
 	void GetInteractableUnit(AInteractableUnit* unit);
@@ -40,12 +40,29 @@ public:
 	class ASavePointStation* CurrentSavePointStation{ nullptr };
 
 	//Movement
+	void DoMovement(float);
 	void MoveForward(float);
 	void MoveRight(float);
-	FVector MovementVector{ 0.f,0.f,0.f};
+	void SetMoveLocation(float);
+	FVector CurrentMoveLocation;
+	FVector MovementVector{ 0.f,0.f,0.f };
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		float MovementSpeed{ 20 };
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		bool bUseMousePositionAsForward{1};
+	APlayerController* PC{nullptr};
+
+	//Health
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+		float MaxHealth{ 100 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+		float CurrentHealth{ 100 };
+
+	void TakeDamage(float damage);
+
+	void TakeSomeDamageTest();
+
+	//Decal on mouse posistion
 	UPROPERTY(EditAnywhere)
-	float MovementSpeed{20};
-	//Rotation
-	UPROPERTY(EditAnywhere)
-	float RotationSpeed{ 100 };
+	UDecalComponent* DecalComponent;
 };
