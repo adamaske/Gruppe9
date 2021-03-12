@@ -11,8 +11,14 @@ class GROUP9_API APlayerUnit : public ACharacter
 {
 	GENERATED_BODY()
 
-		UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* PlayerMesh;
+	UPROPERTY(EditAnywhere)
+	UStaticMeshComponent* PlayerMesh;
+
+	UPROPERTY(EditAnywhere)
+	class UCameraComponent* MyCamera;
+
+	UPROPERTY(EditAnywhere)
+	class USpringArmComponent* CameraBoom;
 public:
 	// Sets default values for this character's properties
 	APlayerUnit();
@@ -40,16 +46,13 @@ public:
 	class ASavePointStation* CurrentSavePointStation{ nullptr };
 
 	//Movement
-	void DoMovement(float);
 	void MoveForward(float);
 	void MoveRight(float);
-	void SetMoveLocation(float);
-	FVector CurrentMoveLocation;
 	FVector MovementVector{ 0.f,0.f,0.f };
 	UPROPERTY(EditAnywhere, Category = "Stats")
-		float MovementSpeed{ 20 };
+		float MovementSpeed{ 400 };
 	UPROPERTY(EditAnywhere, Category = "Stats")
-		bool bUseMousePositionAsForward{1};
+		bool bCameraForward{ 1 };
 	APlayerController* PC{nullptr};
 
 	//Health
@@ -60,9 +63,11 @@ public:
 
 	void TakeDamage(float damage);
 
-	void TakeSomeDamageTest();
-
-	//Decal on mouse posistion
-	UPROPERTY(EditAnywhere)
-	UDecalComponent* DecalComponent;
+	//Combat
+	void Shoot();
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		float FireRate{ 0.1 };
+	float ShootingTimer{ 0 };
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		TSubclassOf<class ABullet> BulletBlueprint{nullptr};
 };

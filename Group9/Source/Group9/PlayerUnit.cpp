@@ -6,6 +6,9 @@
 #include "SavePointStation.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Camera/CameraComponent.h"
+#include "GameFramework/SpringArmComponent.h"
+#include "Bullet.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
 {
@@ -14,8 +17,14 @@ APlayerUnit::APlayerUnit()
 
 	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
 	PlayerMesh->SetupAttachment(RootComponent);
-	/*DecalComponent = CreateDefaultSubobject<UDecalComponent>(TEXT("MousePosistionDecal"));
-	DecalComponent->SetupAttachment(RootComponent);*/
+
+	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
+	CameraBoom->SetupAttachment(RootComponent);
+	CameraBoom->bInheritYaw = false;
+	CameraBoom->bEnableCameraLag = true;
+
+	MyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
+	MyCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 }
 
 // Called when the game starts or when spawned
@@ -26,10 +35,6 @@ void APlayerUnit::BeginPlay()
 	CurrentHealth = MaxHealth;
 
 	PC = Cast<APlayerController>(GetController());
-
-	if (!bUseMousePositionAsForward) {
-		//DecalComponent->Deactivate();
-	}
 	
 }
 
@@ -38,8 +43,7 @@ void APlayerUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	//Movement
-	DoMovement(DeltaTime);
+	ShootingTimer += DeltaTime;
 }
 
 // Called to bind functionality to input
@@ -49,63 +53,44 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerUnit::Interact);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerUnit::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerUnit::MoveRight);
-	PlayerInputComponent->BindAction("TakeSomeDamageTest", IE_Pressed, this, &APlayerUnit::TakeSomeDamageTest);
-	PlayerInputComponent->BindAxis("MoveToCursor", this, &APlayerUnit::SetMoveLocation);
-}
-
-void APlayerUnit::DoMovement(float DeltaTime)
-{
-	if (bUseMousePositionAsForward) {
-		
-		FVector TempLocation = FVector(CurrentMoveLocation.X, CurrentMoveLocation.Y, GetActorLocation().Z);
-		FVector NewDirection = TempLocation - GetActorLocation();
-
-		if (FVector::Distance(GetActorLocation(), TempLocation) >= 1.f) {
-			//DecalComponent->SetWorldLocation(HitResult.Location);
-			NewDirection.Normalize();
-
-			SetActorRotation(NewDirection.Rotation());
-
-			FVector NewLocation = GetActorLocation() + (GetActorForwardVector() * MovementSpeed * DeltaTime);
-
-			SetActorLocation(NewLocation);
-		}
-		else {
-			UE_LOG(LogTemp, Error, TEXT("Distance between player and move is smaller than 1"));
-		}
-	}
-	else {
-		if (!MovementVector.IsZero()) {
-			FVector newLocation = GetActorLocation() + (MovementVector * MovementSpeed * DeltaTime);
-
-			SetActorLocation(newLocation);
-		}
-	}
-
-	
+	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerUnit::Shoot);
 }
 
 void APlayerUnit::MoveForward(float value)
 {
+	FVector NewDirection;
+	if (bCameraForward) {
+
+		FRotator tempRotation = CameraBoom->GetComponentRotation();
+		tempRotation -= GetViewRotation();
+		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
+		NewDirection = tempRotation.Vector();
+	}
+	else {
+		NewDirection = GetActorForwardVector();
+	}
 	MovementVector.X = value;
+	AddMovementInput(NewDirection, value);
 }
 
 void APlayerUnit::MoveRight(float value)
 {
-	MovementVector.Y = value;
+	FVector NewDirection;
+	if (bCameraForward) {
+
+		FRotator tempRotation = CameraBoom->GetComponentRotation();
+		tempRotation -= GetViewRotation();
+		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
+		NewDirection = tempRotation.Vector();
+	}
+	else {
+		NewDirection = GetActorRightVector();
+	}
+	MovementVector.X = value;
+	AddMovementInput(NewDirection, value);
 }
 
-void APlayerUnit::SetMoveLocation(float value)
-{
-	if (value == 1) {
-		if (PC) {
-			FHitResult HitResult;
-			if (PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult)) {
-				CurrentMoveLocation = HitResult.Location;
-			}
-		}
-	}
-}
 
 void APlayerUnit::Interact() {
 	//If the currentInteractleUnit is not a nullptr, call interact on it
@@ -140,10 +125,6 @@ void APlayerUnit::GetSpawnPointStation(ASavePointStation* station)
 	}
 }
 
-
-void APlayerUnit::TakeSomeDamageTest() {
-	this->TakeDamage(10);
-}
 void APlayerUnit::TakeDamage(float dmg)
 {
 	CurrentHealth -= dmg;
@@ -152,3 +133,17 @@ void APlayerUnit::TakeDamage(float dmg)
 	}
 }
 
+void APlayerUnit::Shoot() {
+	if (ShootingTimer >= FireRate) {
+		//Shoot
+		UE_LOG(LogTemp, Error, TEXT("PLayer shot weapon"));
+		ShootingTimer = 0;
+
+		if (BulletBlueprint) {
+			UWorld* World = GetWorld();
+			if (World) {
+				World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation(), GetActorRotation());
+			}
+		}
+	}
+}
