@@ -56,13 +56,14 @@ public:
 	APlayerController* PC{nullptr};
 
 	//Health
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float MaxHealth{ 100 };
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Stats")
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float CurrentHealth{ 100 };
 
 	void TakeDamage(float damage);
 
+	void TakeDamageTest();
 	//Combat
 	void Shoot();
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -70,4 +71,8 @@ public:
 	float ShootingTimer{ 0 };
 	UPROPERTY(EditAnywhere, Category = "Combat")
 		TSubclassOf<class ABullet> BulletBlueprint{nullptr};
+	//Ammunition
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
+	float CurrentAmmunition{0};
+	void GetAmmunition(float);
 };

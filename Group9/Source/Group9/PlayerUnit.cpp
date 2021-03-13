@@ -8,6 +8,7 @@
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "Bullet.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
@@ -22,9 +23,12 @@ APlayerUnit::APlayerUnit()
 	CameraBoom->SetupAttachment(RootComponent);
 	CameraBoom->bInheritYaw = false;
 	CameraBoom->bEnableCameraLag = true;
+	CameraBoom->CameraLagSpeed = 40.f,
 
 	MyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	MyCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
+	
+	GetCharacterMovement()->MaxCustomMovementSpeed = MovementSpeed;
 }
 
 // Called when the game starts or when spawned
@@ -55,6 +59,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerUnit::MoveRight);
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerUnit::Shoot);
+	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &APlayerUnit::TakeDamageTest);
 }
 
 void APlayerUnit::MoveForward(float value)
@@ -133,17 +138,32 @@ void APlayerUnit::TakeDamage(float dmg)
 	}
 }
 
-void APlayerUnit::Shoot() {
-	if (ShootingTimer >= FireRate) {
-		//Shoot
-		UE_LOG(LogTemp, Error, TEXT("PLayer shot weapon"));
-		ShootingTimer = 0;
+void APlayerUnit::TakeDamageTest()
+{
+	TakeDamage(10);
+}
 
-		if (BulletBlueprint) {
-			UWorld* World = GetWorld();
-			if (World) {
-				World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation(), GetActorRotation());
+void APlayerUnit::Shoot() {
+
+	if (CurrentAmmunition > 0) {
+		if (ShootingTimer >= FireRate) {
+			//Shoot
+			UE_LOG(LogTemp, Log, TEXT("PLayer shot weapon"));
+			ShootingTimer = 0;
+
+			if (BulletBlueprint) {
+				UWorld* World = GetWorld();
+				if (World) {
+					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation(), GetActorRotation());
+					CurrentAmmunition -= 1;
+				}
 			}
 		}
 	}
+	
+}
+
+void APlayerUnit::GetAmmunition(float value)
+{
+	CurrentAmmunition += value;
 }

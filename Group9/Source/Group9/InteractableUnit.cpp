@@ -38,7 +38,7 @@ void AInteractableUnit::Tick(float DeltaTime)
 void AInteractableUnit::InteractWithPlayer(APlayerUnit* player) 
 {
 	//Called when the player presses the interact key
-	UE_LOG(LogTemp, Error, TEXT("Player interacted with me"));
+	UE_LOG(LogTemp, Log, TEXT("Player interacted with me"));
 }
 
 
@@ -46,7 +46,7 @@ void AInteractableUnit::BeganOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	//Checks if this is a PlayerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
-		UE_LOG(LogTemp, Error, TEXT("Started collision with player"));
+		UE_LOG(LogTemp, Log, TEXT("Started collision with player"));
 		//Calls to give this as the new interavctle to the player
 		Cast<APlayerUnit>(OtherActor)->GetInteractableUnit(this);
 	}
@@ -56,7 +56,7 @@ void AInteractableUnit::EndedOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	//Checks if this is a PlayerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
-		UE_LOG(LogTemp, Error, TEXT("Ended collision with player"));
+		UE_LOG(LogTemp, Log, TEXT("Ended collision with player"));
 		//Calls to remove this from the player
 		Cast<APlayerUnit>(OtherActor)->RemoveInteractableUnit(this);
 	}

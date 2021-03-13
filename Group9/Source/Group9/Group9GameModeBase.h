@@ -14,4 +14,11 @@ class GROUP9_API AGroup9GameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
 
+		AGroup9GameModeBase();
+public:
+	TSubclassOf<class APlayerUnit> PlayerBlueprint;
+
+	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 };
