@@ -14,6 +14,7 @@ void AEnemyTurret::BeginPlay()
 	GetWorld()->GetTimerManager().SetTimer(FireRateTimerHandle, this, &AEnemyTurret::CanShoot, FireRate, true);
 
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
+
 }
 
 // Called every frame
