@@ -17,6 +17,10 @@ void AEnemyTurret::BeginPlay()
 
 }
 
+AEnemyTurret::AEnemyTurret()
+{
+}
+
 // Called every frame
 void AEnemyTurret::Tick(float DeltaTime)
 {
