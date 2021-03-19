@@ -11,7 +11,10 @@ ADoor::ADoor() {
 void ADoor::OpenDoor() {
 
 	bIsOpen = true;
-	RoomBehindMe->bRoomIsOpen = true;
+	if (RoomBehindMe) {
+		RoomBehindMe->bRoomIsOpen = true;
+	}
+	
 	UE_LOG(LogTemp, Log, TEXT("Opened door"));
 	DoorMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DoorMesh->SetVisibility(false);
