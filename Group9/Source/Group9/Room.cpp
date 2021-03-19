@@ -32,31 +32,6 @@ void ARoom::Tick(float DeltaTime)
 
 }
 
-void ARoom::UpdateConnectedRooms()
-{
-	//Clears the array first
-	AvailableRooms.Empty();
-
-	//For each of my connected rooms, if their rooms is not already in the array, add them to it
-	for (int i{ 0 }; i < MyConnectedRooms.Num(); i++) {
-		for (int j{ 0 }; j < MyConnectedRooms[i]->MyConnectedRooms.Num(); j++)
-		{
-			if (!AvailableRooms.Contains(MyConnectedRooms[i]->MyConnectedRooms[j])) {
-				AvailableRooms.Add(MyConnectedRooms[i]->MyConnectedRooms[j]);
-			}
-		}
-	}
-	//CHeck each of my connectted doors, Check if they are open, if they are add their rooms to avalible rooms
-	for (int i{ 0 }; i < ConnectedDoors.Num(); i++) {
-		if (ConnectedDoors[i]->bIsOpen) {
-			for (int j{ 0 }; j < ConnectedDoors[i]->RoomsBehindMe.Num(); j++)
-			{
-				AvailableRooms.Add(ConnectedDoors[i]->RoomsBehindMe[j]);
-			}
-		}
-	}
-}
-
 void ARoom::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Check if the otherActor is a player, then give the player itself as a current room

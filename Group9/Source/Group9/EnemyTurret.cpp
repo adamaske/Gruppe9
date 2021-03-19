@@ -15,10 +15,16 @@ void AEnemyTurret::BeginPlay()
 
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
+	
 }
 
 AEnemyTurret::AEnemyTurret()
 {
+	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
+	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
+	TurretBaseMesh->SetupAttachment(RootComponent);
+	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeadMesh"));
+	TurretHeadMesh->SetupAttachment(RootComponent);
 }
 
 // Called every frame

@@ -173,5 +173,4 @@ void APlayerUnit::GetRoom(ARoom* unit)
 {
 	//Gets a new Room and tells to update all its avalible rooms, so the enemy spawner gets correct info
 	CurrentRoom = unit;
-	CurrentRoom->UpdateConnectedRooms();
 }

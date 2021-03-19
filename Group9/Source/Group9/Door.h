@@ -14,17 +14,16 @@ class GROUP9_API ADoor : public AInteractableUnit
 {
 	GENERATED_BODY()
 	
-		UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* DoorMesh;
 public:
-
 	ADoor();
 	void OpenDoor();
 
 	bool bIsOpen;
 
-	void InteractWithPlayer(class APlayerUnit*);
-
 	UPROPERTY(EditAnywhere)
-	TArray<class ARoom*> RoomsBehindMe;
+	class ARoom* RoomBehindMe;
+
+	void InteractWithPlayer(class APlayerUnit*);
 };

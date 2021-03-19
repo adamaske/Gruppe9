@@ -15,14 +15,12 @@ class GROUP9_API ARoom : public AActor
 public:	
 	// Sets default values for this actor's properties
 	ARoom();
-	UPROPERTY(EditAnywhere)
-	TArray<ARoom*> MyConnectedRooms;
-	UPROPERTY(EditAnywhere)
-	TArray<class ADoor*> ConnectedDoors;
-	TArray<ARoom*> AvailableRooms;
 
 	UPROPERTY(EditAnywhere)
 	class UBoxComponent* MyBoxCollision;
+
+	UPROPERTY(EditAnywhere)
+	TArray<AActor*> SpawnPoints;
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -30,9 +28,9 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-
-	void UpdateConnectedRooms();
-
+	
+	UPROPERTY(EditAnywhere)
+		bool bRoomIsOpen{ 1 };
 	UFUNCTION()
 		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,

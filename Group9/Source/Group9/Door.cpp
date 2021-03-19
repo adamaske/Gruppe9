@@ -3,16 +3,19 @@
 
 #include "Door.h"
 #include "PlayerUnit.h"
-
+#include "Room.h"
 ADoor::ADoor() {
 	DoorMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("DoorMesh"));
 	DoorMesh->SetupAttachment(RootComponent);
 }
 void ADoor::OpenDoor() {
+
 	bIsOpen = true;
+	RoomBehindMe->bRoomIsOpen = true;
 	UE_LOG(LogTemp, Log, TEXT("Opened door"));
 	DoorMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DoorMesh->SetVisibility(false);
+
 }
 
 void ADoor::InteractWithPlayer(APlayerUnit* unit) {

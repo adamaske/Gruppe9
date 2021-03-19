@@ -21,4 +21,33 @@ public:
 	virtual void BeginPlay() override;
 
 	virtual void Tick(float DeltaSeconds) override;
+
+	UPROPERTY(EditAnywhere)
+		class APlayerUnit* PlayerUnit;
+
+	void DoSpawning();
+
+	UPROPERTY(EditAnywhere)
+		float Cooldown{ 5 };
+	float currentTime{ 0 };
+	UPROPERTY(EditAnywhere)
+		float MaxEnemiesCount{ 10 };
+	UPROPERTY(VisibleAnywhere)
+		float CurrentEnemiesCount{ 0 };
+	UPROPERTY(EditAnywhere)
+		float MaxDistanceFromPlayerToSpawn{ 400 };
+	UPROPERTY(EditAnywhere)
+		float MinDistanceFromPlayerToSpawn{ 100 };
+
+	UPROPERTY(EditAnywhere)
+		TSubclassOf<class AEnemyUnit> EnemyBlueprint;
+	TArray<AEnemyUnit*> AliveEnemies;
+
+	TArray<AActor*> tempArray;
+	UPROPERTY(EditAnywhere)
+		TArray<class ARoom*> Rooms;
+
+	UPROPERTY(EditAnywhere)
+		TArray<class ADoor*> Doors;
+
 };
