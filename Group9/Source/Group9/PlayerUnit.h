@@ -12,9 +12,6 @@ class GROUP9_API APlayerUnit : public ACharacter
 	GENERATED_BODY()
 
 	UPROPERTY(EditAnywhere)
-	UStaticMeshComponent* PlayerMesh;
-
-	UPROPERTY(EditAnywhere)
 	class UCameraComponent* MyCamera;
 
 	UPROPERTY(EditAnywhere)
@@ -75,4 +72,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	float CurrentAmmunition{0};
 	void GetAmmunition(float);
+
+	//Rooms
+	void GetRoom(class ARoom*);
+
+	class ARoom* CurrentRoom{ nullptr };
 };

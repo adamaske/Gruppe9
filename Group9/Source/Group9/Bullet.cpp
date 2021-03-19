@@ -15,6 +15,7 @@ ABullet::ABullet()
 
 	meshComponent->SetupAttachment(RootComponent);
 
+	
 	Cast<USphereComponent>(RootComponent)->OnComponentBeginOverlap.AddDynamic(this, &ABullet::OnOverlap);
 }
 
@@ -22,7 +23,7 @@ ABullet::ABullet()
 void ABullet::BeginPlay()
 {
 	Super::BeginPlay();
-	
+	meshComponent->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 }
 
 // Called every frame

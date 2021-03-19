@@ -10,14 +10,12 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Bullet.h"
+#include "Room.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
-	PlayerMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("PlayerMeshComponent"));
-	PlayerMesh->SetupAttachment(RootComponent);
 
 	CameraBoom = CreateDefaultSubobject<USpringArmComponent>(TEXT("CameraArm"));
 	CameraBoom->SetupAttachment(RootComponent);
@@ -150,11 +148,14 @@ void APlayerUnit::Shoot() {
 			//Shoot
 			UE_LOG(LogTemp, Log, TEXT("PLayer shot weapon"));
 			ShootingTimer = 0;
-
+			//If the bulletblueprint is alive
 			if (BulletBlueprint) {
+				//If it gets world
 				UWorld* World = GetWorld();
 				if (World) {
-					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation(), GetActorRotation());
+					//Spawn the bulletblueprint at actor location + 50cm forward, and with actor rotaiton
+					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation() + FVector(50.f, 0.f, 0.f), GetActorRotation());
+					//use 1 ammo
 					CurrentAmmunition -= 1;
 				}
 			}
@@ -166,4 +167,11 @@ void APlayerUnit::Shoot() {
 void APlayerUnit::GetAmmunition(float value)
 {
 	CurrentAmmunition += value;
+}
+
+void APlayerUnit::GetRoom(ARoom* unit)
+{
+	//Gets a new Room and tells to update all its avalible rooms, so the enemy spawner gets correct info
+	CurrentRoom = unit;
+	CurrentRoom->UpdateConnectedRooms();
 }
