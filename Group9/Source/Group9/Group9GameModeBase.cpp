@@ -56,7 +56,7 @@ void AGroup9GameModeBase::Tick(float DeltaSeconds) {
 
 void AGroup9GameModeBase::DoSpawning() {
 	UE_LOG(LogTemp, Log, TEXT("Called spawn function"));
-	
+	return;
 	//Get all open rooms, dont want enemies to spawn behind closed doors
 	TArray<ARoom*> OpenRooms;
 	for (int i{0}; i < Rooms.Num(); i++)
