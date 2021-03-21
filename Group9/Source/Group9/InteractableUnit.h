@@ -37,4 +37,11 @@ public:
 	UFUNCTION()
 		void EndedOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	bool bIgnoreCollision{ false };
+
+	void RemoveMeAsInteractableNow();
+
+	class APlayerUnit* currentHolder{ nullptr };
+
+	void DestroyMe();
 };

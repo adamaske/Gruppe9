@@ -44,11 +44,17 @@ void AInteractableUnit::InteractWithPlayer(APlayerUnit* player)
 
 void AInteractableUnit::BeganOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (bIgnoreCollision) {
+		return;
+	}
 	//Checks if this is a PlayerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
 		UE_LOG(LogTemp, Log, TEXT("Started collision with player"));
 		//Calls to give this as the new interavctle to the player
-		Cast<APlayerUnit>(OtherActor)->GetInteractableUnit(this);
+		
+		currentHolder = Cast<APlayerUnit>(OtherActor);
+
+		currentHolder->GetInteractableUnit(this);
 	}
 }
 
@@ -58,6 +64,20 @@ void AInteractableUnit::EndedOverlap(UPrimitiveComponent* OverlappedComponent, A
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
 		UE_LOG(LogTemp, Log, TEXT("Ended collision with player"));
 		//Calls to remove this from the player
-		Cast<APlayerUnit>(OtherActor)->RemoveInteractableUnit(this);
+		if (Cast<APlayerUnit>(OtherActor) == currentHolder) {
+			currentHolder->RemoveInteractableUnit(this);
+		}
+		
 	}
+}
+
+void AInteractableUnit::RemoveMeAsInteractableNow() {
+	if (currentHolder) {
+		currentHolder->RemoveInteractableUnit(this);
+	}
+}
+
+void AInteractableUnit::DestroyMe() {
+	RemoveMeAsInteractableNow();
+	this->Destroy();
 }

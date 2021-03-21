@@ -26,4 +26,6 @@ public:
 	class ARoom* RoomBehindMe;
 
 	void InteractWithPlayer(class APlayerUnit*);
+
+	
 };

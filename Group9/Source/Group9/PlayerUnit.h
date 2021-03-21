@@ -33,11 +33,12 @@ public:
 
 	//Interacting with Interactables
 	void Interact();
-	UPROPERTY(VisibleAnywhere, Category = "Interacting")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category = "Interacting")
 		class AInteractableUnit* CurrentInteractableUnit{ nullptr };
 	void GetInteractableUnit(AInteractableUnit* unit);
 	void RemoveInteractableUnit(AInteractableUnit* unit);
-
+	UPROPERTY(BlueprintReadOnly)
+	bool bInRangeOfItem{false};
 	//Spawn points
 	void GetSpawnPointStation(class ASavePointStation* station);
 	class ASavePointStation* CurrentSavePointStation{ nullptr };

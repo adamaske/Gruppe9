@@ -105,6 +105,7 @@ void APlayerUnit::Interact() {
 void APlayerUnit::GetInteractableUnit(AInteractableUnit* unit)
 {
 	CurrentInteractableUnit = unit;
+	bInRangeOfItem = true;
 }
 
 void APlayerUnit::RemoveInteractableUnit(AInteractableUnit* unit)
@@ -112,6 +113,7 @@ void APlayerUnit::RemoveInteractableUnit(AInteractableUnit* unit)
 	//If this is the current, set the current to null
 	if (CurrentInteractableUnit == unit) {
 		CurrentInteractableUnit = nullptr;
+		bInRangeOfItem = false;
 	}
 }
 

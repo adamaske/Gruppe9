@@ -14,7 +14,8 @@ void ADoor::OpenDoor() {
 	if (RoomBehindMe) {
 		RoomBehindMe->bRoomIsOpen = true;
 	}
-	
+	bIgnoreCollision = true;
+	RemoveMeAsInteractableNow();
 	UE_LOG(LogTemp, Log, TEXT("Opened door"));
 	DoorMesh->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	DoorMesh->SetVisibility(false);
@@ -24,3 +25,4 @@ void ADoor::OpenDoor() {
 void ADoor::InteractWithPlayer(APlayerUnit* unit) {
 	OpenDoor();
 }
+

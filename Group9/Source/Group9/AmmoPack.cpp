@@ -9,5 +9,5 @@ void AAmmoPack::InteractWithPlayer(APlayerUnit* unit)
 	unit->GetAmmunition(AmmoAmount);
 	UE_LOG(LogTemp, Log, TEXT("Picked up ammo"));
 	//destroys itself, since it wont be used anymore
-	this->Destroy();
+	DestroyMe();
 }

@@ -31,3 +31,10 @@ void AEnemyUnit::Tick(float DeltaTime)
 
 }
 
+void AEnemyUnit::TakeDamage(float dmg) {
+	CurrentHealth -= dmg;
+	if (CurrentHealth <= 0) {
+		//Die
+		bIsDead = true;
+	}
+}
