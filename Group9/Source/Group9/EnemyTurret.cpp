@@ -23,8 +23,8 @@ AEnemyTurret::AEnemyTurret()
 	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
 
 	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret head mesh"));
-	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
-	BulletSpawnPoint->SetupAttachment(TurretHeadMesh);
+	EnemyBulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
+	EnemyBulletSpawnPoint->SetupAttachment(TurretHeadMesh);
 }
 
 void AEnemyTurret::TurretFire()

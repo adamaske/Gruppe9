@@ -44,7 +44,7 @@ public:
 		UStaticMeshComponent* TurretHeadMesh;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Components")
-			USceneComponent* BulletSpawnPoint;
+			USceneComponent* EnemyBulletSpawnPoint;
 		
 
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
