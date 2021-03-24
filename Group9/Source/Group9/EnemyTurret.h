@@ -43,6 +43,8 @@ public:
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Components")
 		UStaticMeshComponent* TurretHeadMesh;
 
+		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Components")
+			USceneComponent* BulletSpawnPoint;
 		
 
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
@@ -59,6 +61,12 @@ public:
 protected:
 
 		virtual void BeginPlay() override;
+
+		void TurretFire();
+
+		void TurretRotate(FVector LookAtTarget);
+
+		virtual void HandleDestruction();
 
 
 

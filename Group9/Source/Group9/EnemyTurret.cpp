@@ -20,19 +20,48 @@ void AEnemyTurret::BeginPlay()
 
 AEnemyTurret::AEnemyTurret()
 {
-	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
-	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BaseMesh"));
-	TurretBaseMesh->SetupAttachment(RootComponent);
-	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("HeadMesh"));
-	TurretHeadMesh->SetupAttachment(RootComponent);
+	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
+
+	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret head mesh"));
+	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
+	BulletSpawnPoint->SetupAttachment(TurretHeadMesh);
+}
+
+void AEnemyTurret::TurretFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
+}
+
+void AEnemyTurret::TurretRotate(FVector LookAtTarget)
+{
+	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
+	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
+
+	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
+	TurretHeadMesh->SetWorldRotation(RotateTurret);
+
 }
 
 // Called every frame
 void AEnemyTurret::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+	// checks if playerunit exist to avoid hard crash, and player distance
+	if (!PlayerUnit || PlayerDistance() > TurretRange)
+	{
+	return;
+	}
+	// rotates the mesh of the turret to face player
+	TurretRotate(PlayerUnit->GetActorLocation());
+}
+void AEnemyTurret::HandleDestruction()
+{
 
 }
+
+
+
+
 
 
 /*void AEnemyTurret::Rotate()
@@ -52,7 +81,9 @@ void AEnemyTurret::CanShoot()
 	if (PlayerDistance() <= TurretRange)
 	{
 		//fire
-		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit. 
+		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit.
+		UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
+		TurretFire();
 	}
 }
 
