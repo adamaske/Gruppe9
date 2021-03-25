@@ -66,7 +66,7 @@ protected:
 
 		void TurretRotate(FVector LookAtTarget);
 
-		virtual void HandleDestruction();
+		virtual void HandleDestruction() override;
 
 
 

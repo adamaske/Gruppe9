@@ -19,10 +19,12 @@ void AEnemyTurret::BeginPlay()
 }
 
 AEnemyTurret::AEnemyTurret()
-{
+{	
+	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComp"));
 	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
-
+	TurretBaseMesh->SetupAttachment(RootComponent);
 	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret head mesh"));
+	TurretHeadMesh->SetupAttachment(TurretBaseMesh);
 	EnemyBulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
 	EnemyBulletSpawnPoint->SetupAttachment(TurretHeadMesh);
 }
@@ -37,7 +39,7 @@ void AEnemyTurret::TurretRotate(FVector LookAtTarget)
 	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
 	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
 
-	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
+	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation(); //+ FRotator(0.f, 90.f,0.f);
 	TurretHeadMesh->SetWorldRotation(RotateTurret);
 
 }

@@ -24,6 +24,11 @@ void AEnemyUnit::BeginPlay()
 	
 }
 
+void AEnemyUnit::HandleDestruction()
+{
+
+}
+
 // Called every frame
 void AEnemyUnit::Tick(float DeltaTime)
 {
