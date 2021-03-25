@@ -36,13 +36,46 @@ void AEnemyTurret::TurretFire()
 
 void AEnemyTurret::TurretRotate(FVector LookAtTarget)
 {
+<<<<<<< Updated upstream
 	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
 	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
 
 	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation(); //+ FRotator(0.f, 90.f,0.f);
+=======
+	
+	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
+	
+	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret head mesh"));
+	BulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
+	BulletSpawnPoint->SetupAttachment(TurretHeadMesh);
+
+}
+
+void AEnemyTurret::TurretFire()
+{
+	UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
+}
+
+
+void AEnemyTurret::TurretRotate(FVector LookAtTarget)
+{
+	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
+	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
+
+	FRotator RotateTurret = FVector(AimAtTarget-StartLocation).Rotation();
+>>>>>>> Stashed changes
 	TurretHeadMesh->SetWorldRotation(RotateTurret);
 
 }
+
+void AEnemyTurret::HandleDestruction()
+{
+	
+}
+
+
+
+
 
 // Called every frame
 void AEnemyTurret::Tick(float DeltaTime)
@@ -51,6 +84,7 @@ void AEnemyTurret::Tick(float DeltaTime)
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (!PlayerUnit || PlayerDistance() > TurretRange)
 	{
+<<<<<<< Updated upstream
 	return;
 	}
 	// rotates the mesh of the turret to face player
@@ -58,6 +92,12 @@ void AEnemyTurret::Tick(float DeltaTime)
 }
 void AEnemyTurret::HandleDestruction()
 {
+=======
+		return;
+	}
+	// rotates the mesh of the turret to face player
+	TurretRotate(PlayerUnit->GetActorLocation());
+>>>>>>> Stashed changes
 
 }
 
@@ -83,9 +123,16 @@ void AEnemyTurret::CanShoot()
 	if (PlayerDistance() <= TurretRange)
 	{
 		//fire
+<<<<<<< Updated upstream
 		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit.
 		UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
 		TurretFire();
+=======
+		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit. 
+		UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
+		TurretFire();
+
+>>>>>>> Stashed changes
 	}
 }
 

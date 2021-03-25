@@ -35,8 +35,7 @@ public:
 
 	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Components")
-	USceneComponent* BulletSpawnPoint;
+	
 
 	UPROPERTY(EditAnywhere)
 	float MaxHealth{100};
