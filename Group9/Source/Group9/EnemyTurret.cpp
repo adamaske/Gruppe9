@@ -21,8 +21,10 @@ void AEnemyTurret::BeginPlay()
 AEnemyTurret::AEnemyTurret()
 {	
 	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComp"));
+
 	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
 	TurretBaseMesh->SetupAttachment(RootComponent);
+
 	TurretHeadMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret head mesh"));
 	TurretHeadMesh->SetupAttachment(TurretBaseMesh);
 	EnemyBulletSpawnPoint = CreateDefaultSubobject<USceneComponent>(TEXT("Bullet spawn point"));
@@ -31,6 +33,17 @@ AEnemyTurret::AEnemyTurret()
 
 void AEnemyTurret::TurretFire()
 {
+	//if statement to protecct form crashes in case somne commponents are missing
+	if (EnemyBulletClass)
+	{
+		FVector BulletSpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
+		FRotator BulletSpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
+
+		AEnemyBullet* TempBullet = GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletClass, BulletSpawnLocation, BulletSpawnRotation);
+
+		//Makes it so that the bullet doesnt damage the turret
+		//TempBullet->SetOwner(this);
+	}
 	UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
 }
 
@@ -60,11 +73,6 @@ void AEnemyTurret::HandleDestruction()
 {
 
 }
-
-
-
-
-
 
 /*void AEnemyTurret::Rotate()
 {

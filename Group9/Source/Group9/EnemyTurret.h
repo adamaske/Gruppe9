@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "EnemyUnit.h"
+#include "EnemyBullet.h"
 #include "EnemyTurret.generated.h"
 
 class APlayerUnit;
+class AEnemyBullet;
 
 UCLASS()
 class GROUP9_API AEnemyTurret : public AEnemyUnit
@@ -55,8 +57,14 @@ public:
 
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
 			float FireRate{ 2.0f };
+
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
 			float TurretRange{ 500.f };
+		
+		
+		//bullet actor
+		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turret Stats")
+		TSubclassOf<AEnemyBullet> EnemyBulletClass;
 
 protected:
 
