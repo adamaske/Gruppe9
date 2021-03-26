@@ -44,12 +44,8 @@ public:
 		UStaticMeshComponent* TurretHeadMesh;
 
 		UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Turret Components")
-<<<<<<< Updated upstream
 			USceneComponent* EnemyBulletSpawnPoint;
 		
-=======
-			USceneComponent* BulletSpawnPoint;
->>>>>>> Stashed changes
 
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
 			float  TurretRotationSpeed{ 300 };
@@ -62,8 +58,6 @@ public:
 		UPROPERTY(EditAnywhere, Category = "Turret Stats")
 			float TurretRange{ 500.f };
 
-		
-
 protected:
 
 		virtual void BeginPlay() override;
@@ -72,12 +66,7 @@ protected:
 
 		void TurretRotate(FVector LookAtTarget);
 
-<<<<<<< Updated upstream
 		virtual void HandleDestruction() override;
-=======
-		virtual void HandleDestruction();
-
->>>>>>> Stashed changes
 
 
 
