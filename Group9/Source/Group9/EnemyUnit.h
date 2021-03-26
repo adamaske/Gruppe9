@@ -27,14 +27,15 @@ protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
+	virtual void HandleDestruction();
+
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
 	
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Enemy Components")
-	USceneComponent* BulletSpawnPoint;
+	
 
 	UPROPERTY(EditAnywhere)
 	float MaxHealth{100};
