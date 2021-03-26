@@ -4,6 +4,7 @@
 #include "LevelManager.h"
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
+#include "SavePointStation.h"
 #include "PlayerUnit.h"
 #include "EnemyUnit.h"
 #include "Room.h"
@@ -47,8 +48,9 @@ void ALevelManager::BeginPlay()
 void ALevelManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
-
+	
+	CheckPlayer();
+	
 	currentTime += DeltaTime;
 	if (PlayerUnit) {
 		if (currentTime >= Cooldown) {
@@ -59,6 +61,27 @@ void ALevelManager::Tick(float DeltaTime)
 	else {
 		UE_LOG(LogTemp, Log, TEXT("Gamemode no player"));
 	}
+}
+
+void ALevelManager::CheckPlayer()
+{
+	//Check player death
+	if (PlayerUnit->GetActorLocation().Z <= KillPlayerZValue) {
+
+		UE_LOG(LogTemp, Log, TEXT("Player under kill Z value"));
+		if (PlayerUnit->CurrentSavePointStation) {
+			ASavePointStation* PlayersSavePoint = PlayerUnit->CurrentSavePointStation;
+			FVector NewLocation = PlayersSavePoint->GetActorLocation();
+			NewLocation.X += 100;
+			PlayerUnit->SetActorLocation(NewLocation);
+		}
+		else {
+			FVector NewLocation = FVector(0.f, 0.f, 0.f);
+			PlayerUnit->SetActorLocation(NewLocation);
+		}
+		
+	}
+
 }
 
 void ALevelManager::DoSpawning() {

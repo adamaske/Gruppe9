@@ -33,7 +33,7 @@ public:
 
 	//Interacting with Interactables
 	void Interact();
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly,Category = "Interacting")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Interacting")
 		class AInteractableUnit* CurrentInteractableUnit{ nullptr };
 	void GetInteractableUnit(AInteractableUnit* unit);
 	void RemoveInteractableUnit(AInteractableUnit* unit);
