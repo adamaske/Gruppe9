@@ -44,4 +44,10 @@ public:
 	class APlayerUnit* currentHolder{ nullptr };
 
 	void DestroyMe();
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info")
+	FString UnitName{"InteractableUnit"};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info")
+	FString UnitInformation{"InteractableUnit Information"};
 };

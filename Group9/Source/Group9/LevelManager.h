@@ -23,32 +23,35 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Player")
 		class APlayerUnit* PlayerUnit;
+	UPROPERTY(EditAnywhere, Category = "Player")
+	float KillPlayerZValue{-300};
+	void CheckPlayer();
 
 	void DoSpawning();
 
 	UPROPERTY(EditAnywhere)
 		float Cooldown{ 5 };
 	float currentTime{ 0 };
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Enemies")
 		float MaxEnemiesCount{ 10 };
-	UPROPERTY(VisibleAnywhere)
+	UPROPERTY(VisibleAnywhere, Category = "Enemies")
 		float CurrentEnemiesCount{ 0 };
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Enemies")
 		float MaxDistanceFromPlayerToSpawn{ 400 };
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Enemies")
 		float MinDistanceFromPlayerToSpawn{ 100 };
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Enemies")
 		TSubclassOf<class AEnemyUnit> EnemyBlueprint;
 	TArray<AEnemyUnit*> AliveEnemies;
 
 	TArray<AActor*> tempArray;
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ARoom*> Rooms;
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ADoor*> Doors;
 
 };
