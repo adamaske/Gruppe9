@@ -78,4 +78,10 @@ public:
 	void GetRoom(class ARoom*);
 
 	class ARoom* CurrentRoom{ nullptr };
+	//Level manager
+	void GetLevelManager(class ALevelManager*);
+	class ALevelManager* LevelManager;
+	//Test save and loading
+	void SaveGame();
+	void LoadGame();
 };

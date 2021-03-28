@@ -24,7 +24,7 @@ public:
 	virtual void Tick(float DeltaTime) override;
 
 	UPROPERTY(EditAnywhere, Category = "Player")
-		class APlayerUnit* PlayerUnit;
+		class APlayerUnit* PlayerUnit{ nullptr };
 	UPROPERTY(EditAnywhere, Category = "Player")
 	float KillPlayerZValue{-300};
 	void CheckPlayer();
@@ -33,6 +33,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		float Cooldown{ 5 };
+	UPROPERTY(EditAnywhere)
+		bool bDoSpawning{0};
 	float currentTime{ 0 };
 	UPROPERTY(EditAnywhere, Category = "Enemies")
 		float MaxEnemiesCount{ 10 };
@@ -53,5 +55,9 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ADoor*> Doors;
-
+public:
+	UFUNCTION(BlueprintCallable)
+	void Save();
+	UFUNCTION(BlueprintCallable)
+	void Load();
 };

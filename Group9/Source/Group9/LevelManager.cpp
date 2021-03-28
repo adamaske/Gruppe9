@@ -5,6 +5,7 @@
 #include "Math/UnrealMathUtility.h"
 #include "Kismet/GameplayStatics.h"
 #include "SavePointStation.h"
+#include "SaveManager.h"
 #include "PlayerUnit.h"
 #include "EnemyUnit.h"
 #include "Room.h"
@@ -42,6 +43,7 @@ void ALevelManager::BeginPlay()
 
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerUnit::StaticClass(), FoundActors);
 	PlayerUnit = Cast<APlayerUnit>(FoundActors[0]);
+	PlayerUnit->GetLevelManager(this);
 }
 
 // Called every frame
@@ -50,16 +52,17 @@ void ALevelManager::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 	
 	CheckPlayer();
-	
-	currentTime += DeltaTime;
-	if (PlayerUnit) {
-		if (currentTime >= Cooldown) {
-			DoSpawning();
-			currentTime = 0;
+	if (bDoSpawning) {
+		currentTime += DeltaTime;
+		if (PlayerUnit) {
+			if (currentTime >= Cooldown) {
+				DoSpawning();
+				currentTime = 0;
+			}
 		}
-	}
-	else {
-		UE_LOG(LogTemp, Log, TEXT("Gamemode no player"));
+		else {
+			UE_LOG(LogTemp, Log, TEXT("LevelManager no player"));
+		}
 	}
 }
 
@@ -140,3 +143,31 @@ void ALevelManager::DoSpawning() {
 	UE_LOG(LogTemp, Log, TEXT("Spawned enemies: %d"), ToSpawn);
 }
 
+void ALevelManager::Save() {
+	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+
+	if (PlayerUnit) {
+		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
+		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+		SaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
+		UE_LOG(LogTemp, Log, TEXT("Saved player posision %s"), *SaveGameInstance->PlayerLocation.ToString());
+	}
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySlot"), 0);
+}
+void ALevelManager::Load() {
+	//USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+
+	if (!SaveGameInstance) {
+		return;
+	}
+	UE_LOG(LogTemp, Log, TEXT("Loaded player ammo %f"), SaveGameInstance->PlayerAmmoCount);
+	if (PlayerUnit) {
+		UE_LOG(LogTemp, Log, TEXT("Loaded player posision %s"), *SaveGameInstance->PlayerLocation.ToString());
+		//PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
+		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
+		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
+	}
+	
+}

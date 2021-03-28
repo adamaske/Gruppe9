@@ -9,6 +9,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "LevelManager.h"
 #include "Bullet.h"
 #include "Room.h"
 // Sets default values
@@ -58,6 +59,9 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerUnit::Shoot);
 	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &APlayerUnit::TakeDamageTest);
+	PlayerInputComponent->BindAction("SaveTest", IE_Pressed, this, &APlayerUnit::SaveGame);
+	PlayerInputComponent->BindAction("LoadTest", IE_Pressed, this, &APlayerUnit::LoadGame);
+	
 }
 
 void APlayerUnit::MoveForward(float value)
@@ -175,4 +179,20 @@ void APlayerUnit::GetRoom(ARoom* unit)
 {
 	//Gets a new Room and tells to update all its avalible rooms, so the enemy spawner gets correct info
 	CurrentRoom = unit;
+}
+void APlayerUnit::GetLevelManager(ALevelManager* manager) {
+	LevelManager = manager;
+}
+
+void APlayerUnit::SaveGame() {
+	if (!LevelManager) {
+		return;
+	}
+	LevelManager->Save();
+}
+void APlayerUnit::LoadGame() {
+	if (!LevelManager) {
+		return;
+	}
+	LevelManager->Load();
 }
