@@ -27,6 +27,7 @@ APlayerUnit::APlayerUnit()
 	MyCamera = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	MyCamera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
 	
+	PlayerDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("MouseDecal"));
 	GetCharacterMovement()->MaxCustomMovementSpeed = MovementSpeed;
 }
 
@@ -39,6 +40,7 @@ void APlayerUnit::BeginPlay()
 
 	PC = Cast<APlayerController>(GetController());
 	
+	
 }
 
 // Called every frame
@@ -47,6 +49,10 @@ void APlayerUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ShootingTimer += DeltaTime;
+
+	if (bUseMousePosistion) {
+		RotateToMouse();
+	}
 }
 
 // Called to bind functionality to input
@@ -56,7 +62,9 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &APlayerUnit::Interact);
 	PlayerInputComponent->BindAxis("MoveForward", this, &APlayerUnit::MoveForward);
 	PlayerInputComponent->BindAxis("MoveRight", this, &APlayerUnit::MoveRight);
-	PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	if (!bUseMousePosistion) {
+		PlayerInputComponent->BindAxis("Turn", this, &APawn::AddControllerYawInput);
+	}
 	PlayerInputComponent->BindAction("Shoot", IE_Pressed, this, &APlayerUnit::Shoot);
 	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &APlayerUnit::TakeDamageTest);
 	PlayerInputComponent->BindAction("SaveTest", IE_Pressed, this, &APlayerUnit::SaveGame);
@@ -96,6 +104,29 @@ void APlayerUnit::MoveRight(float value)
 	}
 	MovementVector.X = value;
 	AddMovementInput(NewDirection, value);
+}
+
+void APlayerUnit::RotateToMouse()
+{
+	if (PC) {
+		FHitResult HitResult;
+		PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
+		FVector TempLocation = HitResult.Location;
+		TempLocation.Z = GetActorLocation().Z;
+
+		FVector NewDirection = TempLocation - GetActorLocation();
+
+		if (FVector::Distance(GetActorLocation(), TempLocation) > 10) {
+			NewDirection.Normalize();
+
+			SetActorRotation(NewDirection.Rotation());
+		}
+
+		PlayerDecal->SetWorldLocation(HitResult.Location);
+		PlayerDecal->SetWorldRotation(HitResult.Normal.Rotation());
+	}
+	
+
 }
 
 

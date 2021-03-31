@@ -51,6 +51,9 @@ public:
 		float MovementSpeed{ 400 };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		bool bCameraForward{ 1 };
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		bool bUseMousePosistion{ 0 };
+	void RotateToMouse();
 	APlayerController* PC{nullptr};
 
 	//Health
@@ -84,4 +87,7 @@ public:
 	//Test save and loading
 	void SaveGame();
 	void LoadGame();
+	//Decal stuff
+	UPROPERTY(EditAnywhere)
+	UDecalComponent* PlayerDecal;
 };

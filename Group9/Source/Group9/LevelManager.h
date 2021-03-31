@@ -31,6 +31,7 @@ public:
 
 	void DoSpawning();
 
+	void CheckEnemies();
 	UPROPERTY(EditAnywhere)
 		float Cooldown{ 5 };
 	UPROPERTY(EditAnywhere)

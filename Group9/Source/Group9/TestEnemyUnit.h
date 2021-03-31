@@ -16,9 +16,11 @@ class GROUP9_API ATestEnemyUnit : public AEnemyUnit
 
 		ATestEnemyUnit();
 public:
+	UPROPERTY(EditAnywhere)
 	UStaticMeshComponent* TestMesh;
 
 	void Movement(float);
+	UPROPERTY(EditAnywhere)
 	float movementSpeed = 400;
 	virtual void Tick(float) override;
 	

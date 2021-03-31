@@ -50,7 +50,7 @@ void ALevelManager::BeginPlay()
 void ALevelManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	
+	CheckEnemies();
 	CheckPlayer();
 	if (bDoSpawning) {
 		currentTime += DeltaTime;
@@ -64,6 +64,19 @@ void ALevelManager::Tick(float DeltaTime)
 			UE_LOG(LogTemp, Log, TEXT("LevelManager no player"));
 		}
 	}
+}
+
+void ALevelManager::CheckEnemies() {
+	//Check for dead enemies, destroy and remove them
+	for (int i = 0; i < AliveEnemies.Num(); i++)
+	{
+		if (AliveEnemies[i]->bIsDead) {
+			AliveEnemies[i]->Destroy();
+			AliveEnemies.RemoveAt(i);
+			CurrentEnemiesCount--;
+		}
+	}
+
 }
 
 void ALevelManager::CheckPlayer()
@@ -89,16 +102,7 @@ void ALevelManager::CheckPlayer()
 
 void ALevelManager::DoSpawning() {
 	UE_LOG(LogTemp, Log, TEXT("Called spawn function"));
-	//Check for dead enemies, destroy and remove them
-	for (int i = 0; i < AliveEnemies.Num(); i++)
-	{
-		if (AliveEnemies[i]->bIsDead) {
-			AliveEnemies[i]->Destroy();
-			AliveEnemies.RemoveAt(i);
-			CurrentEnemiesCount--;
-		}
-	}
-
+	
 	//Get all open rooms, dont want enemies to spawn behind closed doors
 	TArray<ARoom*> OpenRooms;
 	for (int i{ 0 }; i < Rooms.Num(); i++)
@@ -134,7 +138,7 @@ void ALevelManager::DoSpawning() {
 			//Store it in a actor
 			AActor* currentSpawnPoint = AvailableSpawnPoints[newIndex];
 			AEnemyUnit* newEnemy = world->SpawnActor<AEnemyUnit>(EnemyBlueprint, currentSpawnPoint->GetActorLocation(), FRotator(0.f, 0.f, 0.f));
-			//newEnemy->PlayerUnit = PlayerUnit;
+			newEnemy->PlayerUnit = PlayerUnit;
 			//Add it to alive enemies
 			AliveEnemies.Add(newEnemy);
 			//Increase enemy count

@@ -37,9 +37,11 @@ void AEnemyUnit::Tick(float DeltaTime)
 }
 
 void AEnemyUnit::TakeDamage(float dmg) {
+	UE_LOG(LogTemp, Log, TEXT("Enemy took damage"));
 	CurrentHealth -= dmg;
 	if (CurrentHealth <= 0) {
 		//Die
+		UE_LOG(LogTemp, Log, TEXT("Enemy dead"));
 		bIsDead = true;
 	}
 }
