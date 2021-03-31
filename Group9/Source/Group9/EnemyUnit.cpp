@@ -3,7 +3,7 @@
 
 #include "EnemyUnit.h"
 #include "Components/CapsuleComponent.h"
-
+#include "PlayerUnit.h"
 // Sets default values
 AEnemyUnit::AEnemyUnit()
 {

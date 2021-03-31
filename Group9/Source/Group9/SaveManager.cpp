@@ -2,7 +2,3 @@
 
 
 #include "SaveManager.h"
-
-USaveManager::USaveManager() {
-
-}

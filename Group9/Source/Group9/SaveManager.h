@@ -14,7 +14,6 @@ class GROUP9_API USaveManager : public USaveGame
 {
 	GENERATED_BODY()
 
-	USaveManager();
 public:
 	//Player stuff
 	FVector PlayerLocation;

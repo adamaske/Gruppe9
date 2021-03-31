@@ -8,10 +8,6 @@
 
 AEnemyBullet::AEnemyBullet()
 {
-	
-	
-	
-
 	BulletMovement = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("Bullet Movement"));
 	BulletMovement->InitialSpeed = BulletSpeed;
 	BulletMovement->MaxSpeed = BulletSpeed;
