@@ -111,9 +111,13 @@ void APlayerUnit::RotateToMouse()
 	if (PC) {
 		FHitResult HitResult;
 		PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
+		if (!HitResult.GetActor()) {
+			return;
+		}
 		FVector TempLocation = HitResult.Location;
 		TempLocation.Z = GetActorLocation().Z;
-
+		
+		
 		FVector NewDirection = TempLocation - GetActorLocation();
 
 		if (FVector::Distance(GetActorLocation(), TempLocation) > 10) {
