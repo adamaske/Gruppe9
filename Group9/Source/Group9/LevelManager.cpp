@@ -44,6 +44,7 @@ void ALevelManager::BeginPlay()
 	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerUnit::StaticClass(), FoundActors);
 	PlayerUnit = Cast<APlayerUnit>(FoundActors[0]);
 	PlayerUnit->GetLevelManager(this);
+	Load();
 }
 
 // Called every frame
@@ -170,7 +171,7 @@ void ALevelManager::Load() {
 	UE_LOG(LogTemp, Log, TEXT("Loaded player ammo %f"), SaveGameInstance->PlayerAmmoCount);
 	if (PlayerUnit) {
 		UE_LOG(LogTemp, Log, TEXT("Loaded player posision %s"), *SaveGameInstance->PlayerLocation.ToString());
-		//PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
+		PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
 		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
 		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
 	}

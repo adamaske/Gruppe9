@@ -16,8 +16,12 @@ class GROUP9_API USaveManager : public USaveGame
 
 public:
 	//Player stuff
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FVector PlayerLocation;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerAmmoCount;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerHealthpackCount;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerCurrentHealth;
 };
