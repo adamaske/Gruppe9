@@ -35,9 +35,9 @@ void ARoom::Tick(float DeltaTime)
 void ARoom::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//Check if the otherActor is a player, then give the player itself as a current room
-	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
+	/*if (OtherActor->IsA(APlayerUnit::StaticClass())) {
 		UE_LOG(LogTemp, Log, TEXT("Player etered room"));
 		Cast<APlayerUnit>(OtherActor)->GetRoom(this);
-	}
+	}*/
 }
 
