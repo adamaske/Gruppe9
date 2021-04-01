@@ -161,8 +161,8 @@ void ALevelManager::Save() {
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySlot"), 0);
 }
 void ALevelManager::Load() {
-	//USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
 
 	if (!SaveGameInstance) {
 		return;
