@@ -69,7 +69,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("TestKey", IE_Pressed, this, &APlayerUnit::TakeDamageTest);
 	PlayerInputComponent->BindAction("SaveTest", IE_Pressed, this, &APlayerUnit::SaveGame);
 	PlayerInputComponent->BindAction("LoadTest", IE_Pressed, this, &APlayerUnit::LoadGame);
-	
+	PlayerInputComponent->BindAction("UseHealthPack", IE_Pressed, this, &APlayerUnit::UseHealthPack);
 }
 
 void APlayerUnit::MoveForward(float value)
@@ -210,11 +210,6 @@ void APlayerUnit::GetAmmunition(float value)
 	CurrentAmmunition += value;
 }
 
-void APlayerUnit::GetRoom(ARoom* unit)
-{
-	//Gets a new Room and tells to update all its avalible rooms, so the enemy spawner gets correct info
-	CurrentRoom = unit;
-}
 void APlayerUnit::GetLevelManager(ALevelManager* manager) {
 	LevelManager = manager;
 }
@@ -230,4 +225,17 @@ void APlayerUnit::LoadGame() {
 		return;
 	}
 	LevelManager->Load();
+}
+
+void APlayerUnit::UseHealthPack()
+{
+	if (HealthPackCount > 0 && CurrentHealth < MaxHealth) {
+		HealthPackCount -= 1;
+		CurrentHealth += HealthPackHealAmount;
+	}
+}
+
+void APlayerUnit::GetHealthPack(float amount)
+{
+	HealthPackCount += amount;
 }

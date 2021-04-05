@@ -61,9 +61,7 @@ public:
 		float MaxHealth{ 100 };
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float CurrentHealth{ 100 };
-
 	void TakeDamage(float damage);
-
 	void TakeDamageTest();
 	//Combat
 	void Shoot();
@@ -76,11 +74,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Combat")
 	float CurrentAmmunition{0};
 	void GetAmmunition(float);
-
-	//Rooms
-	void GetRoom(class ARoom*);
-
-	class ARoom* CurrentRoom{ nullptr };
 	//Level manager
 	void GetLevelManager(class ALevelManager*);
 	class ALevelManager* LevelManager;
@@ -90,4 +83,11 @@ public:
 	//Decal stuff
 	UPROPERTY(EditAnywhere)
 	UDecalComponent* PlayerDecal;
+	//Health packs
+	void UseHealthPack();
+	void GetHealthPack(float);
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int HealthPackCount{1};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float HealthPackHealAmount{ 40 };
 };
