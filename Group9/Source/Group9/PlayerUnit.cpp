@@ -57,7 +57,7 @@ void APlayerUnit::Tick(float DeltaTime)
 		Reload(DeltaTime);
 	}
 
-	AmmoStringToDisplay = CurrentMagazineAmmo.ToString();
+	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(MaxMagazineSize);
 }
 
 // Called to bind functionality to input

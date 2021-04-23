@@ -88,7 +88,7 @@ public:
 
 	void Reload(float);
 	void StartReload();
-
+	UPROPERTY(BlueprintReadOnly)
 	FString AmmoStringToDisplay{""};
 	//Level manager
 	void GetLevelManager(class ALevelManager*);
