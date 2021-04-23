@@ -56,6 +56,8 @@ void APlayerUnit::Tick(float DeltaTime)
 	if (bIsReloading) {
 		Reload(DeltaTime);
 	}
+
+	AmmoStringToDisplay = CurrentMagazineAmmo.ToString();
 }
 
 // Called to bind functionality to input

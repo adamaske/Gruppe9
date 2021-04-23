@@ -75,6 +75,7 @@ public:
 	float CurrentAmmunition{0};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float MaxMagazineSize{ 20 };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
 	float CurrentMagazineAmmo{ 20 };
 	void GetAmmunition(float);
 	//Reloading
@@ -87,6 +88,8 @@ public:
 
 	void Reload(float);
 	void StartReload();
+
+	FString AmmoStringToDisplay{""};
 	//Level manager
 	void GetLevelManager(class ALevelManager*);
 	class ALevelManager* LevelManager;
