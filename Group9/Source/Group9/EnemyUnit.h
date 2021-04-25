@@ -45,12 +45,4 @@ public:
 	bool bIsDead{ 0 };
 
 	virtual void TakeDamage(float);
-	//UPROPERTY(EditAnywhere, Category = "Enemy Stats")
-		//float  EnemyMovementSpeed{ 300 };
-
-	
-
-
-	
-
 };
