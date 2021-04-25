@@ -56,6 +56,12 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ADoor*> Doors;
+
+	UPROPERTY(EditAnywhere, Category = "Rooms")
+		TArray<class ASavePointStation*> SaveStations;
+
+	UPROPERTY(EditAnywhere)
+		bool LoadOnBeginPlay{ 1 };
 public:
 	UFUNCTION(BlueprintCallable)
 	void Save();

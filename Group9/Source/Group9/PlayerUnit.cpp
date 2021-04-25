@@ -90,40 +90,26 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 void APlayerUnit::MoveForward(float value)
 {
 	FVector NewDirection;
-	if (bCameraForward) {
-
-		FRotator tempRotation = CameraBoom->GetComponentRotation();
-		tempRotation -= GetViewRotation();
-		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
-		NewDirection = tempRotation.Vector();
-	}
-	else {
+	if (bUseLocalDirections) {
 		NewDirection = GetActorForwardVector(); 
 	}
-	if (!bUseLocalDirections) {
+	else {
 		NewDirection = FVector::ForwardVector;
 	}
-	MovementVector.X = value;
+
 	AddMovementInput(NewDirection, value);
 }
 
 void APlayerUnit::MoveRight(float value)
 {
 	FVector NewDirection;
-	if (bCameraForward) {
-
-		FRotator tempRotation = CameraBoom->GetComponentRotation();
-		tempRotation -= GetViewRotation();
-		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
-		NewDirection = tempRotation.Vector();
-	}
-	else {
+	if (bUseLocalDirections) {
 		NewDirection = GetActorRightVector();
 	}
-	if (!bUseLocalDirections) {
+	else {
 		NewDirection = FVector::RightVector;
 	}
-	MovementVector.X = value;
+	
 	AddMovementInput(NewDirection, value);
 }
 
@@ -275,12 +261,14 @@ void APlayerUnit::GetLevelManager(ALevelManager* manager) {
 
 void APlayerUnit::SaveGame() {
 	if (!LevelManager) {
+		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
 	LevelManager->Save();
 }
 void APlayerUnit::LoadGame() {
 	if (!LevelManager) {
+		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
 	LevelManager->Load();

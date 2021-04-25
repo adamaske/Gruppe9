@@ -46,11 +46,8 @@ public:
 	//Movement
 	void MoveForward(float);
 	void MoveRight(float);
-	FVector MovementVector{ 0.f,0.f,0.f };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		float MovementSpeed{ 400 };
-	UPROPERTY(EditAnywhere, Category = "Stats")
-		bool bCameraForward{ 1 };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		bool bUseMousePosistion{ 0 };
 	void RotateToMouse();
