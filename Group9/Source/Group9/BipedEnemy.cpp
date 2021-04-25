@@ -15,7 +15,7 @@ void ABipedEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	AIController = Cast<AAIController>(GetController());
+	//AIController = Cast<AAIController>(GetController());
 
 	SphereTrigger->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::OnOverlap);
 	SphereTrigger->OnComponentEndOverlap.AddDynamic(this, &ABipedEnemy::OnOverlapEnd);
