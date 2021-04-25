@@ -10,11 +10,6 @@ AEnemyUnit::AEnemyUnit()
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
 
-
-
-
-
-	
 }
 
 // Called when the game starts or when spawned
@@ -43,5 +38,9 @@ void AEnemyUnit::TakeDamage(float dmg) {
 		//Die
 		UE_LOG(LogTemp, Log, TEXT("Enemy dead"));
 		bIsDead = true;
+
+		if (bIsDead && bDestroyMyselfOnDeath) {
+			this->Destroy();
+		}
 	}
 }

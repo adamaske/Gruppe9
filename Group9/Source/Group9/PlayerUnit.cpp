@@ -4,9 +4,11 @@
 #include "PlayerUnit.h"
 #include "InteractableUnit.h"
 #include "SavePointStation.h"
+#include "EnemyUnit.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LevelManager.h"
@@ -29,6 +31,10 @@ APlayerUnit::APlayerUnit()
 	
 	PlayerDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("MouseDecal"));
 	GetCharacterMovement()->MaxCustomMovementSpeed = MovementSpeed;
+
+	MeleeCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackCollision"));
+	MeleeCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerUnit::AttackHit);
+	MeleeCollisionBox->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -40,7 +46,7 @@ void APlayerUnit::BeginPlay()
 
 	PC = Cast<APlayerController>(GetController());
 	
-	
+	MeleeCollisionBox->SetGenerateOverlapEvents(false);
 }
 
 // Called every frame
@@ -56,8 +62,10 @@ void APlayerUnit::Tick(float DeltaTime)
 	if (bIsReloading) {
 		Reload(DeltaTime);
 	}
-
-	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(MaxMagazineSize);
+	if (bInMeleeAttack) {
+		MeleeAttack(DeltaTime);
+	}
+	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(CurrentAmmunition);
 }
 
 // Called to bind functionality to input
@@ -76,6 +84,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("LoadTest", IE_Pressed, this, &APlayerUnit::LoadGame);
 	PlayerInputComponent->BindAction("UseHealthPack", IE_Pressed, this, &APlayerUnit::UseHealthPack);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerUnit::StartReload);
+	PlayerInputComponent->BindAction("MeleeAttack", IE_Pressed, this, &APlayerUnit::StartMeleeAttack);
 }
 
 void APlayerUnit::MoveForward(float value)
@@ -189,7 +198,7 @@ void APlayerUnit::TakeDamageTest()
 }
 
 void APlayerUnit::Shoot() {
-	if (bIsReloading) {
+	if (bIsReloading || bInMeleeAttack) {
 		return;
 	}
 	if (CurrentMagazineAmmo > 0) {
@@ -216,7 +225,7 @@ void APlayerUnit::Shoot() {
 }
 
 void APlayerUnit::StartReload() {
-	if (!bIsReloading) {
+	if (!bIsReloading && CurrentAmmunition > 0 && !bInMeleeAttack) {
 		bIsReloading = true;
 	}
 }
@@ -283,4 +292,66 @@ void APlayerUnit::UseHealthPack()
 void APlayerUnit::GetHealthPack(float amount)
 {
 	HealthPackCount += amount;
+}
+
+void APlayerUnit::StartMeleeAttack()
+{
+	if (!bInMeleeAttack && !bIsReloading) {
+		bInMeleeAttack = true;
+	}
+}
+
+void APlayerUnit::MeleeAttack(float DeltaTime)
+{
+	if (CurrentMeleeTime >= MeleeAttackTime) {
+		//Do attack
+		if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
+			MeleeCollisionBox->SetGenerateOverlapEvents(false);
+			UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
+		}
+		bMeleeAttackHasHit = false;
+		bInMeleeAttack = false;
+		CurrentMeleeTime = 0;
+	}
+	else {
+		//Only allow it to hit once in an atatck, if it has already hit, disable it
+		if (!bMeleeAttackHasHit) {
+			//If the timer is before or after the start and end, dont check for overlap events
+			if (CurrentMeleeTime < MeleeAttackCollisionStart || CurrentMeleeTime >= MeleeAttackCollisionEnd) {
+				//Deactivate collision
+				if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
+					MeleeCollisionBox->SetGenerateOverlapEvents(false);
+					UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
+				}
+			}
+			//If the timer is between the start and end, check for collisions
+			if (CurrentMeleeTime > MeleeAttackCollisionStart && CurrentMeleeTime < MeleeAttackCollisionEnd) {
+				//Activate collison
+				if (MeleeCollisionBox->GetGenerateOverlapEvents() == false) {
+					MeleeCollisionBox->SetGenerateOverlapEvents(true);
+					UE_LOG(LogTemp, Log, TEXT("Activated melee box"));
+				}
+			}
+		}
+		else {
+			if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
+				MeleeCollisionBox->SetGenerateOverlapEvents(false);
+				UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
+			}
+		}
+		CurrentMeleeTime += DeltaTime;
+	}
+}
+
+void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+{
+	if (bMeleeAttackHasHit) { 
+		return; 
+	}
+	if (OtherActor->IsA(AEnemyUnit::StaticClass())) {
+		bMeleeAttackHasHit = true;
+		UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Enemy"));
+		AEnemyUnit* unit = Cast<AEnemyUnit>(OtherActor);
+		unit->TakeDamage(MeleeAttackDamage);
+	}
 }
