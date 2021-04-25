@@ -53,6 +53,11 @@ void APlayerUnit::Tick(float DeltaTime)
 	if (bUseMousePosistion) {
 		RotateToMouse();
 	}
+	if (bIsReloading) {
+		Reload(DeltaTime);
+	}
+
+	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(MaxMagazineSize);
 }
 
 // Called to bind functionality to input
@@ -70,6 +75,7 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("SaveTest", IE_Pressed, this, &APlayerUnit::SaveGame);
 	PlayerInputComponent->BindAction("LoadTest", IE_Pressed, this, &APlayerUnit::LoadGame);
 	PlayerInputComponent->BindAction("UseHealthPack", IE_Pressed, this, &APlayerUnit::UseHealthPack);
+	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerUnit::StartReload);
 }
 
 void APlayerUnit::MoveForward(float value)
@@ -183,8 +189,10 @@ void APlayerUnit::TakeDamageTest()
 }
 
 void APlayerUnit::Shoot() {
-
-	if (CurrentAmmunition > 0) {
+	if (bIsReloading) {
+		return;
+	}
+	if (CurrentMagazineAmmo > 0) {
 		if (ShootingTimer >= FireRate) {
 			//Shoot
 			UE_LOG(LogTemp, Log, TEXT("PLayer shot weapon"));
@@ -197,17 +205,53 @@ void APlayerUnit::Shoot() {
 					//Spawn the bulletblueprint at actor location + 50cm forward, and with actor rotaiton
 					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation() + FVector(50.f, 0.f, 0.f), GetActorRotation());
 					//use 1 ammo
-					CurrentAmmunition -= 1;
+					CurrentMagazineAmmo -= 1;
 				}
 			}
 		}
 	}
-	
+	else {
+		StartReload();
+	}
+}
+
+void APlayerUnit::StartReload() {
+	if (!bIsReloading) {
+		bIsReloading = true;
+	}
+}
+
+void APlayerUnit::Reload(float DeltaTime) {
+	//Check if it is already reloading
+	if (CurrentAmmunition > 0) {
+		if (currentReloadTime >= ReloadTime) {
+			//Check if there is any more amunition
+			if (CurrentAmmunition > 0) {
+				//Find how much is missing from the current magazine
+				float missingAmmo = MaxMagazineSize - CurrentMagazineAmmo;
+				//Find if there is enough ammo to fill it, else take whats left
+				if (missingAmmo > CurrentAmmunition) {
+					missingAmmo = CurrentAmmunition;
+				}
+				//Add the ammo
+				CurrentMagazineAmmo += missingAmmo;
+				//FMath::Clamp(CurrentMagazineAmmo, 0.f, MaxMagazineSize);
+				//Remove from ammo pool
+				CurrentAmmunition -= missingAmmo;
+
+				currentReloadTime = 0;
+				bIsReloading = false;
+			}
+		}
+		else {
+			currentReloadTime += DeltaTime;
+		}
+	}		
 }
 
 void APlayerUnit::GetAmmunition(float value)
 {
-	CurrentAmmunition += value;
+	CurrentAmmunition += MaxMagazineSize;
 }
 
 void APlayerUnit::GetLevelManager(ALevelManager* manager) {
@@ -232,6 +276,7 @@ void APlayerUnit::UseHealthPack()
 	if (HealthPackCount > 0 && CurrentHealth < MaxHealth) {
 		HealthPackCount -= 1;
 		CurrentHealth += HealthPackHealAmount;
+		CurrentHealth = FMath::Clamp(CurrentHealth, 0.f, MaxHealth);
 	}
 }
 
