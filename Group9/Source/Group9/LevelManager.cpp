@@ -22,8 +22,11 @@ ALevelManager::ALevelManager()
 void ALevelManager::BeginPlay()
 {
 	Super::BeginPlay();
+	if (PlayerUnit) {
+		PlayerUnit->GetLevelManager(this);
+	}
 	//Loads a save file if its found
-	if (LoadOnBeginPlay) {
+	if (bLoadOnBeginPlay) {
 		Load();
 	}
 }
@@ -67,6 +70,10 @@ void ALevelManager::CheckPlayer()
 	if (PlayerUnit->GetActorLocation().Z <= KillPlayerZValue) {
 
 		UE_LOG(LogTemp, Log, TEXT("Player under kill Z value"));
+		if (bLoadOnPlayerDeath) {
+			Load();
+			return;
+		}
 		if (PlayerUnit->CurrentSavePointStation) {
 			ASavePointStation* PlayersSavePoint = PlayerUnit->CurrentSavePointStation;
 			FVector NewLocation = PlayersSavePoint->GetActorLocation();
@@ -159,12 +166,12 @@ void ALevelManager::Save() {
 		}
 	}
 
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySlot"), 0);
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveFileName, 0);
 	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
 void ALevelManager::Load() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(SaveFileName, 0));
 
 	if (!SaveGameInstance) {
 		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));

@@ -4,14 +4,29 @@
 #include "SavePointStation.h"
 #include "PlayerUnit.h"
 
+ASavePointStation::ASavePointStation() {
+	ActiveIndicatorMesh = CreateDefaultSubobject<UStaticMeshComponent>("ActiveIndicator");
+	ActiveIndicatorMesh->SetupAttachment(RootComponent);
+	
+}
+
+void ASavePointStation::BeginPlay() {
+	ActiveIndicatorMesh->SetVisibility(false);
+}
+
 void ASavePointStation::InteractWithPlayer(APlayerUnit* player) {
 	//Gives the player this as a savepointstation
 	player->GetSpawnPointStation(this);
 	bIAmCurrentSpawnPoint = true;
+	if (bSaveGameOnActivatedSavePoint) {
+		player->SaveGame();
+	}
+	ActiveIndicatorMesh->SetVisibility(true);
 	UE_LOG(LogTemp, Log, TEXT("Save point set to this"));
 }
 
 void ASavePointStation::RemoveAsSavePointStation()
 {
 	bIAmCurrentSpawnPoint = false;
+	ActiveIndicatorMesh->SetVisibility(false);
 }

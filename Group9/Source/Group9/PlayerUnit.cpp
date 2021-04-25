@@ -32,6 +32,7 @@ APlayerUnit::APlayerUnit()
 	PlayerDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("MouseDecal"));
 	GetCharacterMovement()->MaxCustomMovementSpeed = MovementSpeed;
 
+	
 	MeleeCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackCollision"));
 	MeleeCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerUnit::AttackHit);
 	MeleeCollisionBox->SetupAttachment(RootComponent);
