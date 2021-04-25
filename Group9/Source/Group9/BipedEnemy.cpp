@@ -2,12 +2,29 @@
 
 
 #include "BipedEnemy.h"
-#include "GameFramework/CharacterMovementComponent.h"
-#include "AIController.h"
-#include "Kismet/KismetSystemLibrary.h"//GetController
+#include "GameFramework/Controller.h"
 
 
 
+
+
+
+
+
+void ABipedEnemy::BeginPlay()
+{
+	Super::BeginPlay();
+
+	AIController = Cast<AAIController>(GetController());
+
+	SphereTrigger->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::OnOverlap);
+	SphereTrigger->OnComponentEndOverlap.AddDynamic(this, &ABipedEnemy::OnOverlapEnd);
+}
+/*void  SetupPlayerInputComponent(UInputComponent* InputComponent)
+{
+	SetupPlayerInputComponent(InputComponent);
+
+}*/
 
 ABipedEnemy::ABipedEnemy()
 {
@@ -24,18 +41,6 @@ ABipedEnemy::ABipedEnemy()
 
 }
 
-void ABipedEnemy::BeginPlay()
-{
-	Super::BeginPlay();
-
-	//AIController = Cast<AAIController>(GetController());
-}
-/*void  SetupPlayerInputComponent(UInputComponent* InputComponent)
-{
-	SetupPlayerInputComponent(InputComponent);
-
-}*/
-
 void ABipedEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
@@ -51,6 +56,16 @@ void ABipedEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 }
 
+void ABipedEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
+	APlayerUnit* Player = Cast<APlayerUnit>(OtherActor);
+	if (AIController && Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("out of unit area"));
+		AIController->StopMovement();
+	}
+}
+
 void  ABipedEnemy::MoveToTarget(APlayerUnit* PlayerUnit1)
 {
 	if (AIController)
@@ -60,5 +75,12 @@ void  ABipedEnemy::MoveToTarget(APlayerUnit* PlayerUnit1)
 		FAIMoveRequest AIMoverequest;
 		AIMoverequest.SetGoalActor(PlayerUnit);
 		AIMoverequest.SetAcceptanceRadius(25.f);
+
+		//creates a nav path
+		FNavPathSharedPtr NavPtr;
+
+		AIController->MoveTo(AIMoverequest, &NavPtr);
+
+
 	}
 }
