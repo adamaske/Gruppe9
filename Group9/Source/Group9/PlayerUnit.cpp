@@ -218,7 +218,7 @@ void APlayerUnit::Shoot() {
 }
 
 void APlayerUnit::StartReload() {
-	if (!bIsReloading && CurrentAmmunition > 0 && !bInMeleeAttack) {
+	if (!bIsReloading && CurrentAmmunition > 0 && !bInMeleeAttack && CurrentMagazineAmmo < MaxMagazineSize) {
 		bIsReloading = true;
 	}
 }
