@@ -139,15 +139,15 @@ void ALevelManager::DoSpawning() {
 
 void ALevelManager::Save() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-
+	USaveManager* StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	if (PlayerUnit) {
-		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
+		StatsSaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
 
-		SaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
-		SaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
+		StatsSaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
+		StatsSaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
 
-		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
-		SaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
+		StatsSaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+		StatsSaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
 
 		//Find open doors
 		for (int i = 0; i < Doors.Num(); i++)
@@ -167,24 +167,26 @@ void ALevelManager::Save() {
 	}
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveFileName, 0);
+	UGameplayStatics::SaveGameToSlot(StatsSaveGameInstance, "StatsSave", 0);
 	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
 void ALevelManager::Load() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(SaveFileName, 0));
-
-	if (!SaveGameInstance) {
+	USaveManager* StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+	StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("StatsSave", 0));
+	if (!SaveGameInstance || !StatsSaveGameInstance) {
 		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));
 		return;
 	}
 	if (PlayerUnit) {
-		PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
+		PlayerUnit->SetActorLocation(StatsSaveGameInstance->PlayerLocation);
 
-		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
-		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
+		PlayerUnit->CurrentAmmunition = StatsSaveGameInstance->PlayerAmmoCount;
+		PlayerUnit->CurrentMagazineAmmo = StatsSaveGameInstance->CurrentMagazineAmount;
 
-		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
-		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
+		PlayerUnit->CurrentHealth = StatsSaveGameInstance->PlayerCurrentHealth;
+		PlayerUnit->HealthPackCount = StatsSaveGameInstance->PlayerHealthpackCount;
 
 		//Open doors
 		for (int i = 0; i < Doors.Num(); i++)

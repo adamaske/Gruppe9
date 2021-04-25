@@ -68,6 +68,8 @@ public:
 
 	UPROPERTY(EditAnywhere)
 		bool bLoadOnPlayerDeath{ 1 };
+
+	
 public:
 	UFUNCTION(BlueprintCallable)
 	void Save();
