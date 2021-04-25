@@ -49,7 +49,7 @@ public:
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
 	// sets up movement for enemy unit
-	virtual void  SetupPlayerInputComponent(UInputComponent* InputComponent);
+	//virtual void  SetupPlayerInputComponent(UInputComponent* InputComponent);
 
 protected:
 

@@ -98,7 +98,10 @@ void APlayerUnit::MoveForward(float value)
 		NewDirection = tempRotation.Vector();
 	}
 	else {
-		NewDirection = GetActorForwardVector();
+		NewDirection = GetActorForwardVector(); 
+	}
+	if (!bUseLocalDirections) {
+		NewDirection = FVector::ForwardVector;
 	}
 	MovementVector.X = value;
 	AddMovementInput(NewDirection, value);
@@ -116,6 +119,9 @@ void APlayerUnit::MoveRight(float value)
 	}
 	else {
 		NewDirection = GetActorRightVector();
+	}
+	if (!bUseLocalDirections) {
+		NewDirection = FVector::RightVector;
 	}
 	MovementVector.X = value;
 	AddMovementInput(NewDirection, value);

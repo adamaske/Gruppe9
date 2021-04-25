@@ -30,11 +30,7 @@ void ABipedEnemy::BeginPlay()
 
 	//AIController = Cast<AAIController>(GetController());
 }
-/*void  SetupPlayerInputComponent(UInputComponent* InputComponent)
-{
-	SetupPlayerInputComponent(InputComponent);
 
-}*/
 
 void ABipedEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
@@ -49,6 +45,10 @@ void ABipedEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 
 
 
+}
+
+void ABipedEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
 }
 
 void  ABipedEnemy::MoveToTarget(APlayerUnit* PlayerUnit1)
