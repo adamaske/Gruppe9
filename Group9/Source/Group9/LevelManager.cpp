@@ -139,68 +139,74 @@ void ALevelManager::DoSpawning() {
 
 void ALevelManager::Save() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	USaveManager* StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+	
 	if (PlayerUnit) {
-		StatsSaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
+		//Only find the statics of the player, and save what level they are on
+		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
 
-		StatsSaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
-		StatsSaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
+		SaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
+		SaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
 
-		StatsSaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
-		StatsSaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
+		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+		SaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
 
-		//Find open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (Doors[i]->bIsOpen) {
-				SaveGameInstance->OpenDoorsIndexes.Add(i);
-			}
-		}
+		SaveGameInstance->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
-		//Find current Savepoint
-		for (int i = 0; i < SaveStations.Num(); i++)
-		{
-			if (SaveStations[i]->bIAmCurrentSpawnPoint) {
-				SaveGameInstance->CurrentSavePointIndex = i;
-			}
+	}
+	//Find open doors
+	for (int i = 0; i < Doors.Num(); i++)
+	{
+		if (Doors[i]->bIsOpen) {
+			SaveGameInstance->OpenDoorsIndexes.Add(i);
 		}
 	}
 
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, SaveFileName, 0);
-	UGameplayStatics::SaveGameToSlot(StatsSaveGameInstance, "StatsSave", 0);
+	//Find current Savepoint
+	for (int i = 0; i < SaveStations.Num(); i++)
+	{
+		if (SaveStations[i]->bIAmCurrentSpawnPoint) {
+			SaveGameInstance->CurrentSavePointIndex = i;
+		}
+	}
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("SaveFile"), 0);
 	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
 void ALevelManager::Load() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(SaveFileName, 0));
-	USaveManager* StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	StatsSaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("StatsSave", 0));
-	if (!SaveGameInstance || !StatsSaveGameInstance) {
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
+
+	if (!SaveGameInstance) {
 		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));
 		return;
 	}
+	
 	if (PlayerUnit) {
-		PlayerUnit->SetActorLocation(StatsSaveGameInstance->PlayerLocation);
+		PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
 
-		PlayerUnit->CurrentAmmunition = StatsSaveGameInstance->PlayerAmmoCount;
-		PlayerUnit->CurrentMagazineAmmo = StatsSaveGameInstance->CurrentMagazineAmount;
+		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
+		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
 
-		PlayerUnit->CurrentHealth = StatsSaveGameInstance->PlayerCurrentHealth;
-		PlayerUnit->HealthPackCount = StatsSaveGameInstance->PlayerHealthpackCount;
-
-		//Open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {
-				Doors[i]->OpenDoor();
-			}
-		}
-
-		//Set active spawnpoint
-		if (SaveGameInstance->CurrentSavePointIndex) {
-			SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
-		}
-		UE_LOG(LogTemp, Log, TEXT("Loaded Game"));
+		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
+		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
 	}
 	
+	//Open doors
+	for (int i = 0; i < Doors.Num(); i++)
+	{
+		if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {
+			Doors[i]->OpenDoor();
+		}
+	}
+	
+	if (!PlayerUnit) {
+		return;
+	}
+
+	//Set active spawnpoint
+	if (SaveGameInstance->CurrentSavePointIndex) {
+		SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Loaded Game"));
 }

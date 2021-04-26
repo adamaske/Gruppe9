@@ -36,4 +36,7 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	TArray<int> OpenDoorsIndexes;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FString CurrentLevelName;
 };
