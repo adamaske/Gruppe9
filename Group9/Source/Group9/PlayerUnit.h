@@ -16,9 +16,6 @@ class GROUP9_API APlayerUnit : public ACharacter
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* CameraBoom;
-
-	UPROPERTY(EditAnywhere)
-		UStaticMeshComponent* TempMeshComponent;
 public:
 	// Sets default values for this character's properties
 	APlayerUnit();
@@ -49,14 +46,16 @@ public:
 	//Movement
 	void MoveForward(float);
 	void MoveRight(float);
+	FVector MovementVector{ 0.f,0.f,0.f };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		float MovementSpeed{ 400 };
+	UPROPERTY(EditAnywhere, Category = "Stats")
+		bool bCameraForward{ 1 };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		bool bUseMousePosistion{ 0 };
 	void RotateToMouse();
 	APlayerController* PC{nullptr};
-	UPROPERTY(EditAnywhere)
-		bool bUseLocalDirections{ 0 };
+
 	//Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float MaxHealth{ 100 };
@@ -107,33 +106,4 @@ public:
 	int HealthPackCount{1};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float HealthPackHealAmount{ 40 };
-	//Melee attack
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
-		bool bInMeleeAttack;
-	UPROPERTY(EditAnywhere, Category  = "Combat")
-	class UBoxComponent* MeleeCollisionBox;
-	void StartMeleeAttack();
-	void MeleeAttack(float);
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	float CurrentMeleeTime{0};
-	UPROPERTY(EditAnywhere, Category = "Combat")
-	float MeleeAttackTime{1};
-	UPROPERTY(EditAnywhere, Category = "Combat")
-		float MeleeAttackCollisionStart{ 0.65f };
-	UPROPERTY(EditAnywhere, Category = "Combat")
-		float MeleeAttackCollisionEnd{ 0.85f };
-	bool bMeleeAttackHasHit{0};
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
-		float MeleeAttackDamage{ 50 };
-	UFUNCTION()
-		void AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
-	//Terminal reading
-	void OpenTerminal(class AJournalTerminal*);
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AJournalTerminal* CurrentTerminal;
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	bool ReadingJournalTerminal{ 0 };
-	void CloseTerminal();
 };

@@ -4,17 +4,14 @@
 #include "PlayerUnit.h"
 #include "InteractableUnit.h"
 #include "SavePointStation.h"
-#include "EnemyUnit.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Camera/CameraComponent.h"
-#include "Components/BoxComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LevelManager.h"
 #include "Bullet.h"
 #include "Room.h"
-#include "JournalTerminal.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
 {
@@ -32,11 +29,6 @@ APlayerUnit::APlayerUnit()
 	
 	PlayerDecal = CreateDefaultSubobject<UDecalComponent>(TEXT("MouseDecal"));
 	GetCharacterMovement()->MaxCustomMovementSpeed = MovementSpeed;
-
-	
-	MeleeCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackCollision"));
-	MeleeCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerUnit::AttackHit);
-	MeleeCollisionBox->SetupAttachment(RootComponent);
 }
 
 // Called when the game starts or when spawned
@@ -48,7 +40,7 @@ void APlayerUnit::BeginPlay()
 
 	PC = Cast<APlayerController>(GetController());
 	
-	MeleeCollisionBox->SetGenerateOverlapEvents(false);
+	
 }
 
 // Called every frame
@@ -64,10 +56,8 @@ void APlayerUnit::Tick(float DeltaTime)
 	if (bIsReloading) {
 		Reload(DeltaTime);
 	}
-	if (bInMeleeAttack) {
-		MeleeAttack(DeltaTime);
-	}
-	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(CurrentAmmunition);
+
+	AmmoStringToDisplay = FString::SanitizeFloat(CurrentMagazineAmmo) + " / " + FString::SanitizeFloat(MaxMagazineSize);
 }
 
 // Called to bind functionality to input
@@ -86,46 +76,44 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 	PlayerInputComponent->BindAction("LoadTest", IE_Pressed, this, &APlayerUnit::LoadGame);
 	PlayerInputComponent->BindAction("UseHealthPack", IE_Pressed, this, &APlayerUnit::UseHealthPack);
 	PlayerInputComponent->BindAction("Reload", IE_Pressed, this, &APlayerUnit::StartReload);
-	PlayerInputComponent->BindAction("MeleeAttack", IE_Pressed, this, &APlayerUnit::StartMeleeAttack);
 }
 
 void APlayerUnit::MoveForward(float value)
 {
-	if (ReadingJournalTerminal) {
-		return;
-	}
 	FVector NewDirection;
-	if (bUseLocalDirections) {
-		NewDirection = GetActorForwardVector(); 
+	if (bCameraForward) {
+
+		FRotator tempRotation = CameraBoom->GetComponentRotation();
+		tempRotation -= GetViewRotation();
+		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
+		NewDirection = tempRotation.Vector();
 	}
 	else {
-		NewDirection = FVector::ForwardVector;
+		NewDirection = GetActorForwardVector();
 	}
-
+	MovementVector.X = value;
 	AddMovementInput(NewDirection, value);
 }
 
 void APlayerUnit::MoveRight(float value)
 {
-	if (ReadingJournalTerminal) {
-		return;
-	}
 	FVector NewDirection;
-	if (bUseLocalDirections) {
-		NewDirection = GetActorRightVector();
+	if (bCameraForward) {
+
+		FRotator tempRotation = CameraBoom->GetComponentRotation();
+		tempRotation -= GetViewRotation();
+		tempRotation.Pitch = 0.f;		// we don't want the pitch, only yaw
+		NewDirection = tempRotation.Vector();
 	}
 	else {
-		NewDirection = FVector::RightVector;
+		NewDirection = GetActorRightVector();
 	}
-	
+	MovementVector.X = value;
 	AddMovementInput(NewDirection, value);
 }
 
 void APlayerUnit::RotateToMouse()
 {
-	if (ReadingJournalTerminal) {
-		return;
-	}
 	if (PC) {
 		FHitResult HitResult;
 		PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
@@ -201,7 +189,7 @@ void APlayerUnit::TakeDamageTest()
 }
 
 void APlayerUnit::Shoot() {
-	if (bIsReloading || bInMeleeAttack || ReadingJournalTerminal) {
+	if (bIsReloading) {
 		return;
 	}
 	if (CurrentMagazineAmmo > 0) {
@@ -228,7 +216,7 @@ void APlayerUnit::Shoot() {
 }
 
 void APlayerUnit::StartReload() {
-	if (!bIsReloading && CurrentAmmunition > 0 && !bInMeleeAttack && CurrentMagazineAmmo < MaxMagazineSize) {
+	if (!bIsReloading) {
 		bIsReloading = true;
 	}
 }
@@ -272,14 +260,12 @@ void APlayerUnit::GetLevelManager(ALevelManager* manager) {
 
 void APlayerUnit::SaveGame() {
 	if (!LevelManager) {
-		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
 	LevelManager->Save();
 }
 void APlayerUnit::LoadGame() {
 	if (!LevelManager) {
-		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
 	LevelManager->Load();
@@ -297,78 +283,4 @@ void APlayerUnit::UseHealthPack()
 void APlayerUnit::GetHealthPack(float amount)
 {
 	HealthPackCount += amount;
-}
-
-void APlayerUnit::StartMeleeAttack()
-{
-	if (!bInMeleeAttack && !bIsReloading) {
-		bInMeleeAttack = true;
-	}
-}
-
-void APlayerUnit::MeleeAttack(float DeltaTime)
-{
-	if (CurrentMeleeTime >= MeleeAttackTime) {
-		//Do attack
-		if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
-			MeleeCollisionBox->SetGenerateOverlapEvents(false);
-			UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
-		}
-		bMeleeAttackHasHit = false;
-		bInMeleeAttack = false;
-		CurrentMeleeTime = 0;
-	}
-	else {
-		//Only allow it to hit once in an atatck, if it has already hit, disable it
-		if (!bMeleeAttackHasHit) {
-			//If the timer is before or after the start and end, dont check for overlap events
-			if (CurrentMeleeTime < MeleeAttackCollisionStart || CurrentMeleeTime >= MeleeAttackCollisionEnd) {
-				//Deactivate collision
-				if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
-					MeleeCollisionBox->SetGenerateOverlapEvents(false);
-					UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
-				}
-			}
-			//If the timer is between the start and end, check for collisions
-			if (CurrentMeleeTime > MeleeAttackCollisionStart && CurrentMeleeTime < MeleeAttackCollisionEnd) {
-				//Activate collison
-				if (MeleeCollisionBox->GetGenerateOverlapEvents() == false) {
-					MeleeCollisionBox->SetGenerateOverlapEvents(true);
-					UE_LOG(LogTemp, Log, TEXT("Activated melee box"));
-				}
-			}
-		}
-		else {
-			if (MeleeCollisionBox->GetGenerateOverlapEvents() == true) {
-				MeleeCollisionBox->SetGenerateOverlapEvents(false);
-				UE_LOG(LogTemp, Log, TEXT("Deactived melee box"));
-			}
-		}
-		CurrentMeleeTime += DeltaTime;
-	}
-}
-
-void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	if (bMeleeAttackHasHit) { 
-		return; 
-	}
-	if (OtherActor->IsA(AEnemyUnit::StaticClass())) {
-		bMeleeAttackHasHit = true;
-		UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Enemy"));
-		AEnemyUnit* unit = Cast<AEnemyUnit>(OtherActor);
-		unit->TakeDamage(MeleeAttackDamage);
-	}
-}
-
-void APlayerUnit::OpenTerminal(AJournalTerminal* terminal)
-{
-	CurrentTerminal = terminal;
-	ReadingJournalTerminal = true;
-}
-
-void APlayerUnit::CloseTerminal()
-{
-	ReadingJournalTerminal = false;
-	CurrentTerminal = nullptr;
 }
