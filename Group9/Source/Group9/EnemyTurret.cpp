@@ -5,6 +5,10 @@
 #include "Kismet/GameplayStatics.h"
 #include "PlayerUnit.h"
 
+
+
+
+
 // Called when the game starts or when spawned
 void AEnemyTurret::BeginPlay()
 {
@@ -16,6 +20,11 @@ void AEnemyTurret::BeginPlay()
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
 
 	
+}
+
+bool AEnemyTurret::IsActive(AFuseBox* myBox)
+{
+	return false;
 }
 
 AEnemyTurret::AEnemyTurret()
@@ -33,27 +42,32 @@ AEnemyTurret::AEnemyTurret()
 
 void AEnemyTurret::TurretFire()
 {
+
 	//if statement to protecct form crashes in case somne commponents are missing
-	if (EnemyBulletClass)
-	{
-		FVector BulletSpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
-		FRotator BulletSpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
-
-		AEnemyBullet* TempBullet = GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletClass, BulletSpawnLocation, BulletSpawnRotation);
-
-		//Makes it so that the bullet doesnt damage the turret
-		//TempBullet->SetOwner(this);
-	}
-	UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
+		if (EnemyBulletClass)
+		{
+			FVector BulletSpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
+			FRotator BulletSpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
+	
+			AEnemyBullet* TempBullet = GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletClass, BulletSpawnLocation, BulletSpawnRotation);
+	
+			//Makes it so that the bullet doesnt damage the turret
+			//TempBullet->SetOwner(this);
+		}
+		UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
+	
 }
 
 void AEnemyTurret::TurretRotate(FVector LookAtTarget)
 {
-	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
-	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
+	if (myBox)
+	{
+		FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
+		FVector StartLocation = TurretHeadMesh->GetComponentLocation();
 
-	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
-	TurretHeadMesh->SetWorldRotation(RotateTurret);
+		FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
+		TurretHeadMesh->SetWorldRotation(RotateTurret);
+	}
 
 }
 
@@ -84,7 +98,7 @@ void AEnemyTurret::CanShoot()
 	}
 
 	//if player is in range, open fire
-	if (PlayerDistance() <= TurretRange)
+	if (PlayerDistance() <= TurretRange && myBox)
 	{
 		//fire
 		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit.

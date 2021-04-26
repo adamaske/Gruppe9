@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "InteractableUnit.h"
+#include "EnemyTurret.h"
 #include "FuseBox.generated.h"
 
 /**
@@ -18,5 +19,10 @@ class GROUP9_API AFuseBox : public AInteractableUnit
 
 public:
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Fuse Box")
+		UStaticMeshComponent* FuseBoxMesh;
 
+		virtual void InteractWithPlayer(APlayerUnit* player) override;
+
+		AEnemyTurret* myTurret;
 };

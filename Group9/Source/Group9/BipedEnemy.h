@@ -28,12 +28,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bi Enemy")
 		UStaticMeshComponent* BipedMesh;
 
-	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
-		AAIController* AIController;
-
-	
-	
-
 	void MoveUnit(FVector LookAtTarget);
 
 

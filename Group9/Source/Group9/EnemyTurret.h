@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "EnemyUnit.h"
 #include "EnemyBullet.h"
+#include "FuseBox.h"
 #include "EnemyTurret.generated.h"
 
 class APlayerUnit;
@@ -17,7 +18,7 @@ class GROUP9_API AEnemyTurret : public AEnemyUnit
 	
 private:
 
-
+	
 	
 	FQuat Rotation;
 
@@ -65,6 +66,11 @@ public:
 		//bullet actor
 		UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Turret Stats")
 		TSubclassOf<AEnemyBullet> EnemyBulletClass;
+
+		AFuseBox* myBox;
+
+		bool IsActive(AFuseBox* myBox);
+
 
 protected:
 
