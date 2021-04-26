@@ -21,4 +21,9 @@ public:
 	UPROPERTY(VisibleAnywhere)
 	bool bIAmBeingRead{ 0 };
 	void CloseTerminal(class APlayerUnit*);
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FString JournalHeader {"The Title of the Journal"};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+		FString JournalStoryDesc {"The story is here"};
 };
