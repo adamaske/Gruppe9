@@ -16,6 +16,10 @@ class GROUP9_API AJournalTerminal : public AInteractableUnit
 	
 public:
 	virtual void InteractWithPlayer(APlayerUnit*) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString TerminalName;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString TerminalText;
 
 	void OpenTerminal(class APlayerUnit*);
 	UPROPERTY(VisibleAnywhere)

@@ -131,6 +131,7 @@ public:
 			bool bFromSweep, const FHitResult& SweepResult);
 	//Terminal reading
 	void OpenTerminal(class AJournalTerminal*);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	AJournalTerminal* CurrentTerminal;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool ReadingJournalTerminal{ 0 };
