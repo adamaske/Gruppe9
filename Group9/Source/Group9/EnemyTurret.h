@@ -18,7 +18,7 @@ class GROUP9_API AEnemyTurret : public AEnemyUnit
 private:
 
 
-	
+	//void Rotate();
 	FQuat Rotation;
 
 	APlayerUnit* PlayerUnit;
