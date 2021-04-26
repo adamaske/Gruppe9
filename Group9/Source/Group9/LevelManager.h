@@ -27,6 +27,9 @@ public:
 		class APlayerUnit* PlayerUnit{ nullptr };
 	UPROPERTY(EditAnywhere, Category = "Player")
 	float KillPlayerZValue{-300};
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Saving")
+		FString SaveFileName { "" };
 	void CheckPlayer();
 
 	void DoSpawning();
@@ -56,6 +59,17 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ADoor*> Doors;
+
+	UPROPERTY(EditAnywhere, Category = "Rooms")
+		TArray<class ASavePointStation*> SaveStations;
+
+	UPROPERTY(EditAnywhere)
+		bool bLoadOnBeginPlay{ 1 };
+
+	UPROPERTY(EditAnywhere)
+		bool bLoadOnPlayerDeath{ 1 };
+
+	
 public:
 	UFUNCTION(BlueprintCallable)
 	void Save();

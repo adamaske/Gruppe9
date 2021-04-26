@@ -16,12 +16,27 @@ class GROUP9_API USaveManager : public USaveGame
 
 public:
 	//Player stuff
+	//Location
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FVector PlayerLocation;
+	//Health
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+	float PlayerCurrentHealth;
+	//Ammunition
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerAmmoCount;
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-	float PlayerHealthpackCount;
+	float CurrentMagazineAmount;
+	//Health packs
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-	float PlayerCurrentHealth;
+	float PlayerHealthpackCount;
+	
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+	int CurrentSavePointIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+	TArray<int> OpenDoorsIndexes;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FString CurrentLevelName;
 };

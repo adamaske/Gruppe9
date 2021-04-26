@@ -22,29 +22,13 @@ ALevelManager::ALevelManager()
 void ALevelManager::BeginPlay()
 {
 	Super::BeginPlay();
-	
-	//Find all rooms
-	TArray<AActor*> FoundActors;
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoor::StaticClass(), FoundActors);
-
-	for (AActor* ac : FoundActors) {
-		ADoor* newDoor = Cast<ADoor>(ac);
-		if (newDoor) {
-			Doors.Add(newDoor);
-		}
+	if (PlayerUnit) {
+		PlayerUnit->GetLevelManager(this);
 	}
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoom::StaticClass(), FoundActors);
-	for (AActor* ac : FoundActors) {
-		ARoom* newRoom = Cast<ARoom>(ac);
-		if (newRoom) {
-			Rooms.Add(newRoom);
-		}
+	//Loads a save file if its found
+	if (bLoadOnBeginPlay) {
+		Load();
 	}
-
-	UGameplayStatics::GetAllActorsOfClass(GetWorld(), APlayerUnit::StaticClass(), FoundActors);
-	PlayerUnit = Cast<APlayerUnit>(FoundActors[0]);
-	PlayerUnit->GetLevelManager(this);
-	Load();
 }
 
 // Called every frame
@@ -86,6 +70,10 @@ void ALevelManager::CheckPlayer()
 	if (PlayerUnit->GetActorLocation().Z <= KillPlayerZValue) {
 
 		UE_LOG(LogTemp, Log, TEXT("Player under kill Z value"));
+		if (bLoadOnPlayerDeath) {
+			Load();
+			return;
+		}
 		if (PlayerUnit->CurrentSavePointStation) {
 			ASavePointStation* PlayersSavePoint = PlayerUnit->CurrentSavePointStation;
 			FVector NewLocation = PlayersSavePoint->GetActorLocation();
@@ -151,29 +139,74 @@ void ALevelManager::DoSpawning() {
 
 void ALevelManager::Save() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-
+	
 	if (PlayerUnit) {
+		//Only find the statics of the player, and save what level they are on
 		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
-		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+
 		SaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
-		UE_LOG(LogTemp, Log, TEXT("Saved player posision %s"), *SaveGameInstance->PlayerLocation.ToString());
+		SaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
+
+		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+		SaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
+
+		SaveGameInstance->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+
+	}
+	//Find open doors
+	for (int i = 0; i < Doors.Num(); i++)
+	{
+		if (Doors[i]->bIsOpen) {
+			SaveGameInstance->OpenDoorsIndexes.Add(i);
+		}
 	}
 
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("MySlot"), 0);
+	//Find current Savepoint
+	for (int i = 0; i < SaveStations.Num(); i++)
+	{
+		if (SaveStations[i]->bIAmCurrentSpawnPoint) {
+			SaveGameInstance->CurrentSavePointIndex = i;
+		}
+	}
+
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("SaveFile"), 0);
+	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
 void ALevelManager::Load() {
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot("MySlot", 0));
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
 
 	if (!SaveGameInstance) {
+		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));
 		return;
 	}
-	UE_LOG(LogTemp, Log, TEXT("Loaded player ammo %f"), SaveGameInstance->PlayerAmmoCount);
+	
 	if (PlayerUnit) {
-		UE_LOG(LogTemp, Log, TEXT("Loaded player posision %s"), *SaveGameInstance->PlayerLocation.ToString());
 		PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
+
 		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
+		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
+
 		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
+		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
 	}
 	
+	//Open doors
+	for (int i = 0; i < Doors.Num(); i++)
+	{
+		if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {
+			Doors[i]->OpenDoor();
+		}
+	}
+	
+	if (!PlayerUnit) {
+		return;
+	}
+
+	//Set active spawnpoint
+	if (SaveGameInstance->CurrentSavePointIndex) {
+		SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Loaded Game"));
 }

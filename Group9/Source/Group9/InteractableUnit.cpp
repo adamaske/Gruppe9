@@ -49,7 +49,7 @@ void AInteractableUnit::BeganOverlap(UPrimitiveComponent* OverlappedComponent, A
 	}
 	//Checks if this is a PlayerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
-		UE_LOG(LogTemp, Log, TEXT("Started collision with player"));
+		//UE_LOG(LogTemp, Log, TEXT("Started collision with player"));
 		//Calls to give this as the new interavctle to the player
 		
 		currentHolder = Cast<APlayerUnit>(OtherActor);
@@ -62,7 +62,7 @@ void AInteractableUnit::EndedOverlap(UPrimitiveComponent* OverlappedComponent, A
 {
 	//Checks if this is a PlayerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
-		UE_LOG(LogTemp, Log, TEXT("Ended collision with player"));
+		//UE_LOG(LogTemp, Log, TEXT("Ended collision with player"));
 		//Calls to remove this from the player
 		if (Cast<APlayerUnit>(OtherActor) == currentHolder) {
 			currentHolder->RemoveInteractableUnit(this);
