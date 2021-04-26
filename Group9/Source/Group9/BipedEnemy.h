@@ -24,9 +24,6 @@ public:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
 		UCapsuleComponent* CapCollider;
 
-	//a sphere that works as a primitive line of sight
-	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
-		USphereComponent* SphereTrigger;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bi Enemy")
 		UStaticMeshComponent* BipedMesh;
@@ -34,28 +31,35 @@ public:
 	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
 		AAIController* AIController;
 
-	//move to player unit func
-	void MoveToTarget(APlayerUnit* PlayerUnit1);
+	
+	
 
-	// function to active when playe enters NPC area
-	UFUNCTION()
-		void OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
-			bool bFromSweep, const FHitResult& SweepResult);
+	void MoveUnit(FVector LookAtTarget);
 
-	//function that activtaes on player leaving NPC area
-	UFUNCTION()
-		void OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex);
 
-	// sets up movement for enemy unit
-	//virtual void  SetupPlayerInputComponent(UInputComponent* InputComponent);
+	UPROPERTY(VisibleAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
+		float movementSpeed = 40;
+
+	
+
+	UPROPERTY(EditAnywhere, Category = "Bi Enemy")
+		float BipedStopRange{ 100.f };
+
+	virtual void Tick(float DeltaTime) override;
 
 protected:
 
-	virtual void BeginPlay(); 
+	virtual void BeginPlay();
 
-public:
+private:
+
+	float PlayerDistance();
+
+	FQuat Rotation;
+
+	FTimerHandle MeleeTimerHandle;
+
+	APlayerUnit* PlayerUnit;
 
 
 };
