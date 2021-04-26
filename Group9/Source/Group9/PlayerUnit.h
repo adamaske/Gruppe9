@@ -129,4 +129,10 @@ public:
 		void AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+	//Terminal reading
+	void OpenTerminal(class AJournalTerminal*);
+	AJournalTerminal* CurrentTerminal;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool ReadingJournalTerminal{ 0 };
+	void CloseTerminal();
 };

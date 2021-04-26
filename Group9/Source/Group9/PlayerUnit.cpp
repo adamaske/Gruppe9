@@ -14,6 +14,7 @@
 #include "LevelManager.h"
 #include "Bullet.h"
 #include "Room.h"
+#include "JournalTerminal.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
 {
@@ -90,6 +91,9 @@ void APlayerUnit::SetupPlayerInputComponent(UInputComponent* PlayerInputComponen
 
 void APlayerUnit::MoveForward(float value)
 {
+	if (ReadingJournalTerminal) {
+		return;
+	}
 	FVector NewDirection;
 	if (bUseLocalDirections) {
 		NewDirection = GetActorForwardVector(); 
@@ -103,6 +107,9 @@ void APlayerUnit::MoveForward(float value)
 
 void APlayerUnit::MoveRight(float value)
 {
+	if (ReadingJournalTerminal) {
+		return;
+	}
 	FVector NewDirection;
 	if (bUseLocalDirections) {
 		NewDirection = GetActorRightVector();
@@ -116,6 +123,9 @@ void APlayerUnit::MoveRight(float value)
 
 void APlayerUnit::RotateToMouse()
 {
+	if (ReadingJournalTerminal) {
+		return;
+	}
 	if (PC) {
 		FHitResult HitResult;
 		PC->GetHitResultUnderCursor(ECC_Visibility, true, HitResult);
@@ -191,7 +201,7 @@ void APlayerUnit::TakeDamageTest()
 }
 
 void APlayerUnit::Shoot() {
-	if (bIsReloading || bInMeleeAttack) {
+	if (bIsReloading || bInMeleeAttack || ReadingJournalTerminal) {
 		return;
 	}
 	if (CurrentMagazineAmmo > 0) {
@@ -349,4 +359,16 @@ void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		AEnemyUnit* unit = Cast<AEnemyUnit>(OtherActor);
 		unit->TakeDamage(MeleeAttackDamage);
 	}
+}
+
+void APlayerUnit::OpenTerminal(AJournalTerminal* terminal)
+{
+	CurrentTerminal = terminal;
+	ReadingJournalTerminal = true;
+}
+
+void APlayerUnit::CloseTerminal()
+{
+	ReadingJournalTerminal = false;
+	CurrentTerminal = nullptr;
 }
