@@ -106,8 +106,7 @@ public:
 	int HealthPackCount{1};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float HealthPackHealAmount{ 40 };
-<<<<<<< HEAD
-=======
+
 	//Melee attack
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		bool bInMeleeAttack;
@@ -136,5 +135,5 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool ReadingJournalTerminal{ 0 };
 	void CloseTerminal();
->>>>>>> parent of 9d25d68 (journals)
+
 };
