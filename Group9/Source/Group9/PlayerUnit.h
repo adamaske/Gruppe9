@@ -106,4 +106,35 @@ public:
 	int HealthPackCount{1};
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	float HealthPackHealAmount{ 40 };
+<<<<<<< HEAD
+=======
+	//Melee attack
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		bool bInMeleeAttack;
+	UPROPERTY(EditAnywhere, Category  = "Combat")
+	class UBoxComponent* MeleeCollisionBox;
+	void StartMeleeAttack();
+	void MeleeAttack(float);
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float CurrentMeleeTime{0};
+	UPROPERTY(EditAnywhere, Category = "Combat")
+	float MeleeAttackTime{1};
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		float MeleeAttackCollisionStart{ 0.65f };
+	UPROPERTY(EditAnywhere, Category = "Combat")
+		float MeleeAttackCollisionEnd{ 0.85f };
+	bool bMeleeAttackHasHit{0};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Combat")
+		float MeleeAttackDamage{ 50 };
+	UFUNCTION()
+		void AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
+			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
+			bool bFromSweep, const FHitResult& SweepResult);
+	//Terminal reading
+	void OpenTerminal(class AJournalTerminal*);
+	AJournalTerminal* CurrentTerminal;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	bool ReadingJournalTerminal{ 0 };
+	void CloseTerminal();
+>>>>>>> parent of 9d25d68 (journals)
 };
