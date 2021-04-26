@@ -16,14 +16,13 @@ class GROUP9_API AJournalTerminal : public AInteractableUnit
 	
 public:
 	virtual void InteractWithPlayer(APlayerUnit*) override;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString TerminalName;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString TerminalText;
 
 	void OpenTerminal(class APlayerUnit*);
 	UPROPERTY(VisibleAnywhere)
 	bool bIAmBeingRead{ 0 };
 	void CloseTerminal(class APlayerUnit*);
-
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		FString JournalHeader {"The Title of the Journal"};
-	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-		FString JournalStoryDesc {"The story is here"};
 };

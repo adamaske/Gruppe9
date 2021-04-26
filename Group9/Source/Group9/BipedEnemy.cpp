@@ -2,7 +2,10 @@
 
 
 #include "BipedEnemy.h"
-#include "Kismet/GameplayStatics.h"
+#include "GameFramework/Controller.h"
+#include "GameFramework/CharacterMovementComponent.h"
+#include "AIController.h"
+#include "Kismet/KismetSystemLibrary.h"
 
 
 
@@ -14,9 +17,19 @@ void ABipedEnemy::BeginPlay()
 {
 	Super::BeginPlay();
 
-	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
-}
+	//AIController = Cast<AAIController>(GetController());
+//GetController
 
+
+
+	SphereTrigger->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::OnOverlap);
+	SphereTrigger->OnComponentEndOverlap.AddDynamic(this, &ABipedEnemy::OnOverlapEnd);
+}
+void  SetupPlayerInputComponent(UInputComponent* InputComponent)
+{
+	///SetupPlayerInputComponent(InputComponent);
+
+}
 
 ABipedEnemy::ABipedEnemy()
 {
@@ -25,50 +38,57 @@ ABipedEnemy::ABipedEnemy()
 	BipedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Biped Mesh"));
 	BipedMesh->SetupAttachment(RootComponent);
 
+	SphereTrigger = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere Trigger"));
+	SphereTrigger->SetupAttachment(RootComponent);
+	SphereTrigger->InitSphereRadius(600.f);
+
+
+
+
+
 }
 
-void  ABipedEnemy::MoveUnit(FVector LookAtTarget)
+void ABipedEnemy::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 
-			FVector FaceTarget = FVector(LookAtTarget.X, LookAtTarget.Y, BipedMesh->GetComponentLocation().Z);
-			FVector StartLocation = BipedMesh->GetComponentLocation();
-
-			FRotator RotateBiped = FVector(FaceTarget - StartLocation).Rotation();
-			BipedMesh->SetWorldRotation(RotateBiped);
-
-			
-			LookAtTarget.Z = GetActorLocation().Z;
-			FVector NewDirection = LookAtTarget - GetActorLocation();
-			NewDirection.Normalize();
-
-			
-			SetActorRotation(NewDirection.Rotation());
-
-
-			FVector MoveVector = GetActorLocation() + GetActorForwardVector() * movementSpeed* 0.1;
-			SetActorLocation(MoveVector);
-		
-}
-
-
-
-void ABipedEnemy::Tick(float DeltaTime)
-{
-	Super::Tick(DeltaTime);
-	
-	//Gets location of player and biped to measure the distance between them
-	FVector currentPlayerLocal = PlayerUnit->GetActorLocation();
-	FVector currentBipedLocal = BipedMesh->GetComponentLocation();
-	float MeleeRange = FVector::Distance(currentPlayerLocal, currentBipedLocal);
-
-
-	// checks if playerunit exist to avoid hard crash, and player distance
-	if (!PlayerUnit || BipedStopRange < MeleeRange)
+	APlayerUnit* Player = Cast<APlayerUnit>(OtherActor);
+	if (Player)//checks if player char is present to avoid hard crashes
 	{
-		MoveUnit(PlayerUnit->GetActorLocation());
 		
+		MoveToTarget(Player);
 	}
-	
-	
-	
+
+
+
+
+}
+
+void ABipedEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
+{
+
+	APlayerUnit* Player = Cast<APlayerUnit>(OtherActor);
+	if (AIController && Player)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("out of unit area"));
+		AIController->StopMovement();
+	}
+
+}
+
+void  ABipedEnemy::MoveToTarget(APlayerUnit* PlayerUnit1)
+{
+	if (AIController)
+	{
+
+
+		FAIMoveRequest AIMoverequest;
+		AIMoverequest.SetGoalActor(PlayerUnit);
+		AIMoverequest.SetAcceptanceRadius(25.f);
+
+		//creates a nav path
+		FNavPathSharedPtr NavPtr;
+
+		AIController->MoveTo(AIMoverequest, &NavPtr);
+
+	}
 }

@@ -12,6 +12,7 @@ ATestEnemyUnit::ATestEnemyUnit() {
 }
 void ATestEnemyUnit::Tick(float DeltaSeconds) {
 	Movement(DeltaSeconds);
+
 }
 
 void ATestEnemyUnit::Movement(float DeltaSeconds)
