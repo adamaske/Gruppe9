@@ -52,7 +52,7 @@ void AEnemyTurret::TurretRotate(FVector LookAtTarget)
 	FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
 	FVector StartLocation = TurretHeadMesh->GetComponentLocation();
 
-	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();// +FRotator(0.f, 90.f, 0.f);
+	FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
 	TurretHeadMesh->SetWorldRotation(RotateTurret);
 
 }
@@ -74,11 +74,7 @@ void AEnemyTurret::HandleDestruction()
 
 }
 
-/*void AEnemyTurret::Rotate()
-{
-	
 
-}*/
 void AEnemyTurret::CanShoot()
 {
 	//Chekcs if the player exist
