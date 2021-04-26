@@ -55,7 +55,7 @@ public:
 		bool bUseMousePosistion{ 0 };
 	void RotateToMouse();
 	APlayerController* PC{nullptr};
-
+	bool bUseLocalDirections = false;
 	//Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float MaxHealth{ 100 };
