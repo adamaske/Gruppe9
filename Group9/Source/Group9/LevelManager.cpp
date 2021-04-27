@@ -27,7 +27,7 @@ void ALevelManager::BeginPlay()
 	}
 	//Loads a save file if its found
 	if (bLoadOnBeginPlay) {
-		Load();
+		LoadTheGame();
 	}
 }
 
@@ -71,7 +71,7 @@ void ALevelManager::CheckPlayer()
 
 		UE_LOG(LogTemp, Log, TEXT("Player under kill Z value"));
 		if (bLoadOnPlayerDeath) {
-			Load();
+			LoadTheGame();
 			return;
 		}
 		if (PlayerUnit->CurrentSavePointStation) {
@@ -137,9 +137,14 @@ void ALevelManager::DoSpawning() {
 	UE_LOG(LogTemp, Log, TEXT("Spawned enemies: %d"), ToSpawn);
 }
 
-void ALevelManager::Save() {
-	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	
+void ALevelManager::SaveTheGame() {
+	//Find and override the previous save file
+	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
+	if (!SaveGameInstance) {
+		SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
+	}
+
+	UE_LOG(LogTemp, Log, TEXT("Started saving"));
 	if (PlayerUnit) {
 		//Only find the statics of the player, and save what level they are on
 		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
@@ -153,6 +158,8 @@ void ALevelManager::Save() {
 		SaveGameInstance->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
 	}
+
+	
 	//Find open doors
 	for (int i = 0; i < Doors.Num(); i++)
 	{
@@ -162,31 +169,48 @@ void ALevelManager::Save() {
 	}
 
 	//Find current Savepoint
+
 	for (int i = 0; i < SaveStations.Num(); i++)
 	{
 		if (SaveStations[i]->bIAmCurrentSpawnPoint) {
-			SaveGameInstance->CurrentSavePointIndex = i;
+			if (SaveGameInstance->CurrentLevelName == "Level1") {
+				UE_LOG(LogTemp, Log, TEXT("Saved a savepoitnstation 1 index"));
+				SaveGameInstance->Level1SavePointIndex = i;
+				SaveGameInstance->LevelHasIndex = true;
+			}
+			else if (SaveGameInstance->CurrentLevelName == "Level2") {
+				UE_LOG(LogTemp, Log, TEXT("Saved a savepoitnstation 2 index"));
+				SaveGameInstance->Level2SavePointIndex = i;
+				SaveGameInstance->Level2HasIndex = true;
+			}
 		}
+	}
+
+
+	//Save location
+	if (SaveGameInstance->CurrentLevelName == "Level1") {
+		SaveGameInstance->Level1PlayerLocation = PlayerUnit->GetActorLocation();
+	}
+	else if (SaveGameInstance->CurrentLevelName == "Level2") {
+		SaveGameInstance->Level2PlayerLocation = PlayerUnit->GetActorLocation();
 	}
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("SaveFile"), 0);
 	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
-void ALevelManager::Load() {
+void ALevelManager::LoadTheGame() {
+
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
-
+	//Return if there is no savegame instance
 	if (!SaveGameInstance) {
 		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));
 		return;
 	}
-	
+	//Give the player stats
 	if (PlayerUnit) {
-		PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
-
 		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
 		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
-
 		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
 		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
 	}
@@ -198,15 +222,29 @@ void ALevelManager::Load() {
 			Doors[i]->OpenDoor();
 		}
 	}
-	
+	//Dont do anything from here incase there is no player
 	if (!PlayerUnit) {
 		return;
 	}
+	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	if (CurrentLevelName == "Level1") {
+		if (!SaveGameInstance->LevelHasIndex) {
+			return;
+		}
 
-	//Set active spawnpoint
-	if (SaveGameInstance->CurrentSavePointIndex) {
-		SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
+		SaveStations[SaveGameInstance->Level1SavePointIndex]->UsedFromLoader(true, PlayerUnit);
+		PlayerUnit->SetActorLocation(SaveGameInstance->Level1PlayerLocation);
+
 	}
+	else if (CurrentLevelName == "Level2") {
+		if (!SaveGameInstance->Level2HasIndex) {
+			return;
+		}
+		SaveStations[SaveGameInstance->Level2SavePointIndex]->UsedFromLoader(true, PlayerUnit);
+		PlayerUnit->SetActorLocation(SaveGameInstance->Level2PlayerLocation);
+
+	}
+	
 
 	UE_LOG(LogTemp, Log, TEXT("Loaded Game"));
 }

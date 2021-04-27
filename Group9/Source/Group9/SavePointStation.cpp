@@ -30,3 +30,13 @@ void ASavePointStation::RemoveAsSavePointStation()
 	bIAmCurrentSpawnPoint = false;
 	ActiveIndicatorMesh->SetVisibility(false);
 }
+void ASavePointStation::UsedFromLoader(bool DoSaving, APlayerUnit* player) {
+	//Gives the player this as a savepointstation
+	player->GetSpawnPointStation(this);
+	bIAmCurrentSpawnPoint = true;
+	/*if (bSaveGameOnActivatedSavePoint) {
+		player->SaveGame();
+	}*/
+	ActiveIndicatorMesh->SetVisibility(true);
+	UE_LOG(LogTemp, Log, TEXT("Save point set to this"));
+}

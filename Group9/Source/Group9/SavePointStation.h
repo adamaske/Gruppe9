@@ -21,7 +21,7 @@ public:
 
 	virtual void BeginPlay() override;
 	virtual void InteractWithPlayer(class APlayerUnit*) override;
-
+	void UsedFromLoader(bool DoSaving, class APlayerUnit*);
 	void RemoveAsSavePointStation();
 
 	UPROPERTY(VisibleAnywhere)

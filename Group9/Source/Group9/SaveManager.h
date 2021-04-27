@@ -19,6 +19,10 @@ public:
 	//Location
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	FVector PlayerLocation;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FVector Level1PlayerLocation;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		FVector Level2PlayerLocation;
 	//Health
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerCurrentHealth;
@@ -39,4 +43,14 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FString CurrentLevelName;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int Level1SavePointIndex;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int Level2SavePointIndex;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool LevelHasIndex = false;
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		bool Level2HasIndex = false;
 };

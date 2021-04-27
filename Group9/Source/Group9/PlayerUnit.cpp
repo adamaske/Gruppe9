@@ -275,14 +275,14 @@ void APlayerUnit::SaveGame() {
 		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
-	LevelManager->Save();
+	LevelManager->SaveTheGame();
 }
 void APlayerUnit::LoadGame() {
 	if (!LevelManager) {
 		UE_LOG(LogTemp, Log, TEXT("No LevelManager"));
 		return;
 	}
-	LevelManager->Load();
+	LevelManager->LoadTheGame();
 }
 
 void APlayerUnit::UseHealthPack()

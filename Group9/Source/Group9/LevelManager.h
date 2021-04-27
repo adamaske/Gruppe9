@@ -72,7 +72,7 @@ public:
 	
 public:
 	UFUNCTION(BlueprintCallable)
-	void Save();
+	void SaveTheGame();
 	UFUNCTION(BlueprintCallable)
-	void Load();
+	void LoadTheGame();
 };
