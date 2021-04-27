@@ -57,7 +57,7 @@ void APlayerUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	ShootingTimer += DeltaTime;
-
+	
 	if (bUseMousePosistion) {
 		RotateToMouse();
 	}
@@ -364,6 +364,11 @@ void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 void APlayerUnit::OpenTerminal(AJournalTerminal* terminal)
 {
 	CurrentTerminal = terminal;
+	UE_LOG(LogTemp, Log, TEXT("I got terminal"));
+	
+	JournalText = CurrentTerminal->TerminalText;
+	JournalName = CurrentTerminal->TerminalName;
+
 	ReadingJournalTerminal = true;
 }
 
