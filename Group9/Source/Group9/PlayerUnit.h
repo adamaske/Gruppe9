@@ -132,9 +132,12 @@ public:
 	//Terminal reading
 	void OpenTerminal(class AJournalTerminal*);
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
-	AJournalTerminal* CurrentTerminal;
+	class AJournalTerminal* CurrentTerminal;
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	bool ReadingJournalTerminal{ 0 };
 	void CloseTerminal();
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString JournalName{"Journal Name"};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
+	FString JournalText{"Journal Text"};
 };
