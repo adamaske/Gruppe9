@@ -22,6 +22,12 @@ ALevelManager::ALevelManager()
 void ALevelManager::BeginPlay()
 {
 	Super::BeginPlay();
+	APlayerController* MyController = GetWorld()->GetFirstPlayerController();
+	if (MyController) {
+		MyController->bShowMouseCursor = false;
+		MyController->bEnableClickEvents = false;
+		MyController->bEnableMouseOverEvents = false;
+	}
 	if (PlayerUnit) {
 		PlayerUnit->GetLevelManager(this);
 	}
