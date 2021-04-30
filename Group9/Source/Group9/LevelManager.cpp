@@ -106,6 +106,7 @@ void ALevelManager::DoSpawning() {
 			OpenRooms.Add(Rooms[i]);
 		}
 	}
+	
 	//Get all the spawnpoints in the open rooms
 	TArray<AActor*> AvailableSpawnPoints;
 	for (int i{ 0 }; i < OpenRooms.Num(); i++)
@@ -115,7 +116,7 @@ void ALevelManager::DoSpawning() {
 			AvailableSpawnPoints.Add(OpenRooms[i]->SpawnPoints[j]);
 		}
 	}
-
+	
 	//Get the max new amount to spawn
 	float MaxNewEnemies = MaxEnemiesCount - CurrentEnemiesCount;
 	//Decide new amount
@@ -130,6 +131,7 @@ void ALevelManager::DoSpawning() {
 		{
 			//Get a random spawn point 
 			int newIndex = FMath::RandRange(0, AvailableSpawnPoints.Num()-1);
+			
 			//Store it in a actor
 			AActor* currentSpawnPoint = AvailableSpawnPoints[newIndex];
 			AEnemyUnit* newEnemy = world->SpawnActor<AEnemyUnit>(EnemyBlueprint, currentSpawnPoint->GetActorLocation(), FRotator(0.f, 0.f, 0.f));

@@ -4,19 +4,17 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "Room.generated.h"
-
+#include "EnemySpawnPointUnit.generated.h"
 
 UCLASS()
-class GROUP9_API ARoom : public AActor
+class GROUP9_API AEnemySpawnPointUnit : public AActor
 {
 	GENERATED_BODY()
 	
 public:	
 	// Sets default values for this actor's properties
-	ARoom();
-	UPROPERTY(EditAnywhere)
-	TArray<AActor*> SpawnPoints;
+	AEnemySpawnPointUnit();
+
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
@@ -24,7 +22,5 @@ protected:
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
-	
-	UPROPERTY(EditAnywhere)
-		bool bRoomIsOpen{ 1 };
+
 };

@@ -22,8 +22,8 @@ public:
 
 	bool bIsOpen;
 
-	UPROPERTY(EditAnywhere)
-	class ARoom* RoomBehindMe;
+	UPROPERTY(EditAnywhere, Category = "Rooms")
+		class ARoom* RoomBehindMe{ nullptr };
 
 	void InteractWithPlayer(class APlayerUnit*);
 
