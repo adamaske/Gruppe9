@@ -23,6 +23,8 @@ void ADoor::OpenDoor() {
 }
 
 void ADoor::InteractWithPlayer(APlayerUnit* unit) {
-	OpenDoor();
+	if (unit->UseKey()) {
+		OpenDoor();
+	}
 }
 

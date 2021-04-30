@@ -162,7 +162,7 @@ void ALevelManager::SaveTheGame() {
 		SaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
 
 		SaveGameInstance->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-
+		SaveGameInstance->PlayerKeyAmount = PlayerUnit->KeyAmount;
 	}
 
 	
@@ -219,6 +219,7 @@ void ALevelManager::LoadTheGame() {
 		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
 		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
 		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
+		PlayerUnit->KeyAmount = SaveGameInstance->PlayerKeyAmount;
 	}
 	
 	//Open doors

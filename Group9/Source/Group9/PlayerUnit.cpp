@@ -377,3 +377,16 @@ void APlayerUnit::CloseTerminal()
 	ReadingJournalTerminal = false;
 	CurrentTerminal = nullptr;
 }
+void APlayerUnit::GetKey() {
+	KeyAmount += 1;
+}
+bool APlayerUnit::UseKey() {
+	if (KeyAmount > 0) {
+		KeyAmount -= 1;
+		return true;
+	}
+	else {
+		return false;
+	}
+	
+}

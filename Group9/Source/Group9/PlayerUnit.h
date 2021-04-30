@@ -140,4 +140,9 @@ public:
 	FString JournalName{"Journal Name"};
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly)
 	FString JournalText{"Journal Text"};
+	//Keys
+	void GetKey();
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	int KeyAmount{ 0 };
+	bool UseKey();
 };

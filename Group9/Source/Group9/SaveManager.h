@@ -53,4 +53,7 @@ public:
 		bool LevelHasIndex = false;
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		bool Level2HasIndex = false;
+
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int PlayerKeyAmount;
 };
