@@ -8,6 +8,7 @@
 #include "SaveManager.h"
 #include "PlayerUnit.h"
 #include "EnemyUnit.h"
+#include "EnemySpawnPointUnit.h"
 #include "Room.h"
 #include "Door.h"
 // Sets default values
