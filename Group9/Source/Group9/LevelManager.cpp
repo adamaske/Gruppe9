@@ -22,6 +22,26 @@ ALevelManager::ALevelManager()
 void ALevelManager::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bFindDoorsAndRoomsOnBeginPlay) {
+		//Find doors and rooms
+		TArray<AActor*> FoundActors;
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ADoor::StaticClass(), FoundActors);
+		Doors.Empty();
+		for (int i = 0; i < FoundActors.Num(); i++)
+		{
+			Doors.Add(Cast<ADoor>(FoundActors[i]));
+		}
+
+		FoundActors.Empty();
+		Rooms.Empty();
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ARoom::StaticClass(), FoundActors);
+		for (int i = 0; i < FoundActors.Num(); i++)
+		{
+			Rooms.Add(Cast<ARoom>(FoundActors[i]));
+		}
+	}
+	
 	APlayerController* MyController = GetWorld()->GetFirstPlayerController();
 	if (MyController) {
 		MyController->bShowMouseCursor = false;
@@ -198,9 +218,23 @@ void ALevelManager::SaveTheGame() {
 	//Save location
 	if (SaveGameInstance->CurrentLevelName == "Level1") {
 		SaveGameInstance->Level1PlayerLocation = PlayerUnit->GetActorLocation();
+		//Find open doors
+		for (int i = 0; i < Doors.Num(); i++)
+		{
+			if (Doors[i]->bIsOpen) {
+				SaveGameInstance->Level1DoorsIndexes.Add(i);
+			}
+		}
 	}
 	else if (SaveGameInstance->CurrentLevelName == "Level2") {
 		SaveGameInstance->Level2PlayerLocation = PlayerUnit->GetActorLocation();
+		//Find open doors
+		for (int i = 0; i < Doors.Num(); i++)
+		{
+			if (Doors[i]->bIsOpen) {
+				SaveGameInstance->Level2DoorsIndexes.Add(i);
+			}
+		}
 	}
 
 	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("SaveFile"), 0);
@@ -224,13 +258,6 @@ void ALevelManager::LoadTheGame() {
 		PlayerUnit->KeyAmount = SaveGameInstance->PlayerKeyAmount;
 	}
 	
-	//Open doors
-	for (int i = 0; i < Doors.Num(); i++)
-	{
-		if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {
-			Doors[i]->OpenDoor();
-		}
-	}
 	//Dont do anything from here incase there is no player
 	if (!PlayerUnit) {
 		return;
@@ -241,6 +268,13 @@ void ALevelManager::LoadTheGame() {
 			return;
 		}
 
+		//Open doors
+		for (int i = 0; i < Doors.Num(); i++)
+		{
+			if (SaveGameInstance->Level1DoorsIndexes.Contains(i)) {
+				Doors[i]->OpenDoor();
+			}
+		}
 		SaveStations[SaveGameInstance->Level1SavePointIndex]->UsedFromLoader(true, PlayerUnit);
 		PlayerUnit->SetActorLocation(SaveGameInstance->Level1PlayerLocation);
 
@@ -248,6 +282,14 @@ void ALevelManager::LoadTheGame() {
 	else if (CurrentLevelName == "Level2") {
 		if (!SaveGameInstance->Level2HasIndex) {
 			return;
+		}
+
+		//Open doors
+		for (int i = 0; i < Doors.Num(); i++)
+		{
+			if (SaveGameInstance->Level2DoorsIndexes.Contains(i)) {
+				Doors[i]->OpenDoor();
+			}
 		}
 		SaveStations[SaveGameInstance->Level2SavePointIndex]->UsedFromLoader(true, PlayerUnit);
 		PlayerUnit->SetActorLocation(SaveGameInstance->Level2PlayerLocation);

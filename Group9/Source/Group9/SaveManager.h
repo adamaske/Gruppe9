@@ -56,4 +56,11 @@ public:
 
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		int PlayerKeyAmount;
+
+	//Level 1 Doors and rooms
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		TArray<int> Level1DoorsIndexes;
+	//Level 2 Doors and rooms
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		TArray<int> Level2DoorsIndexes;
 };

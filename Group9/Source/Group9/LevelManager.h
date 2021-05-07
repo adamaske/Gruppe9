@@ -53,6 +53,8 @@ public:
 		TSubclassOf<class AEnemyUnit> EnemyBlueprint;
 	TArray<AEnemyUnit*> AliveEnemies;
 
+	UPROPERTY(EditAnywhere, Category = "Rooms")
+		bool bFindDoorsAndRoomsOnBeginPlay{ 1 };
 	TArray<AActor*> tempArray;
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 		TArray<class ARoom*> Rooms;
