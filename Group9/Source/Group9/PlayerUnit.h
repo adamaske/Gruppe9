@@ -145,4 +145,21 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
 	int KeyAmount{ 0 };
 	bool UseKey();
+
+	//Camera shake
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		TSubclassOf<class UCameraShakeBase> ShootShake;
+	UPROPERTY(EditAnywhere, Category = "Camera")
+		TSubclassOf<class UCameraShakeBase> MeleeShake;
+	void ShakeCamera(bool);
+
+	//Audio
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+	USoundBase* ShootSound{nullptr};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+	USoundBase* ReloadSound {nullptr};
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
+	USoundBase* MeleeSound {nullptr};
+
+	void PlaySound(USoundBase*);
 };

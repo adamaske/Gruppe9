@@ -7,13 +7,18 @@
 #include "EnemyUnit.h"
 #include "Components/DecalComponent.h"
 #include "Kismet/KismetMathLibrary.h"
+#include "Kismet/GameplayStatics.h"
 #include "Camera/CameraComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/AudioComponent.h"
+#include "Sound/SoundBase.h"
+#include "Sound/SoundCue.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "LevelManager.h"
 #include "Bullet.h"
 #include "Room.h"
+#include "Camera/CameraShake.h"
 #include "JournalTerminal.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
@@ -37,6 +42,7 @@ APlayerUnit::APlayerUnit()
 	MeleeCollisionBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeAttackCollision"));
 	MeleeCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerUnit::AttackHit);
 	MeleeCollisionBox->SetupAttachment(RootComponent);
+
 }
 
 // Called when the game starts or when spawned
@@ -49,6 +55,7 @@ void APlayerUnit::BeginPlay()
 	PC = Cast<APlayerController>(GetController());
 	
 	MeleeCollisionBox->SetGenerateOverlapEvents(false);
+
 }
 
 // Called every frame
@@ -215,9 +222,11 @@ void APlayerUnit::Shoot() {
 				UWorld* World = GetWorld();
 				if (World) {
 					//Spawn the bulletblueprint at actor location + 50cm forward, and with actor rotaiton
+					ShakeCamera(false);
 					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation() + FVector(50.f, 0.f, 0.f), GetActorRotation());
 					//use 1 ammo
 					CurrentMagazineAmmo -= 1;
+					PlaySound(ShootSound);
 				}
 			}
 		}
@@ -253,6 +262,8 @@ void APlayerUnit::Reload(float DeltaTime) {
 
 				currentReloadTime = 0;
 				bIsReloading = false;
+				ShakeCamera(false);
+				PlaySound(ReloadSound);
 			}
 		}
 		else {
@@ -335,6 +346,7 @@ void APlayerUnit::MeleeAttack(float DeltaTime)
 				if (MeleeCollisionBox->GetGenerateOverlapEvents() == false) {
 					MeleeCollisionBox->SetGenerateOverlapEvents(true);
 					UE_LOG(LogTemp, Log, TEXT("Activated melee box"));
+					
 				}
 			}
 		}
@@ -355,9 +367,11 @@ void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 	}
 	if (OtherActor->IsA(AEnemyUnit::StaticClass())) {
 		bMeleeAttackHasHit = true;
+		ShakeCamera(true);
 		UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Enemy"));
 		AEnemyUnit* unit = Cast<AEnemyUnit>(OtherActor);
 		unit->TakeDamage(MeleeAttackDamage);
+		PlaySound(MeleeSound);
 	}
 }
 
@@ -390,3 +404,18 @@ bool APlayerUnit::UseKey() {
 	}
 	
 }
+
+void APlayerUnit::ShakeCamera(bool bMelee)
+{
+	if (bMelee) {
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(MeleeShake, 1.f, ECameraShakePlaySpace::World);
+	}
+	else {
+		GetWorld()->GetFirstPlayerController()->PlayerCameraManager->StartCameraShake(ShootShake, 1.f, ECameraShakePlaySpace::World);
+	}
+	
+}
+
+void APlayerUnit::PlaySound(USoundBase* soundToPlay) {
+	UGameplayStatics::PlaySound2D(GetWorld(), soundToPlay, 1.f, 1.f, 0.f);
+};
