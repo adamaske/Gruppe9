@@ -46,6 +46,8 @@ public:
 	//Movement
 	void MoveForward(float);
 	void MoveRight(float);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats")
+		bool bIsMoving{0};
 	FVector MovementVector{ 0.f,0.f,0.f };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		float MovementSpeed{ 400 };
@@ -62,7 +64,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 		float CurrentHealth{ 100 };
 	void TakeDamage(float damage);
-	void TakeDamageTest();
+	bool bTookDamage{ 0 }; 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Stats)
+		bool bIsDead{ 0 };
 	//Combat
 	void Shoot();
 	UPROPERTY(EditAnywhere, Category = "Combat")
@@ -109,6 +113,8 @@ public:
 
 	//Melee attack
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
+		bool bIsWalking;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Combat")
 		bool bInMeleeAttack;
 	UPROPERTY(EditAnywhere, Category  = "Combat")
 	class UBoxComponent* MeleeCollisionBox;
@@ -151,7 +157,7 @@ public:
 		TSubclassOf<class UCameraShakeBase> ShootShake;
 	UPROPERTY(EditAnywhere, Category = "Camera")
 		TSubclassOf<class UCameraShakeBase> MeleeShake;
-	void ShakeCamera(bool);
+	void ShakeCamera(TSubclassOf<class UCameraShakeBase>);
 
 	//Audio
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Audio")
