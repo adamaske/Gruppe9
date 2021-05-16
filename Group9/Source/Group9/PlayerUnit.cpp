@@ -43,6 +43,10 @@ APlayerUnit::APlayerUnit()
 	MeleeCollisionBox->OnComponentBeginOverlap.AddDynamic(this, &APlayerUnit::AttackHit);
 	MeleeCollisionBox->SetupAttachment(RootComponent);
 
+	GunMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("GunMesh"));
+	FlashlightMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("FlashlightMesh"));
+	GunMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("GunSocket"));
+	FlashlightMesh->AttachToComponent(GetMesh(), FAttachmentTransformRules::SnapToTargetIncludingScale, FName("FlashlightSocket"));
 }
 
 // Called when the game starts or when spawned
