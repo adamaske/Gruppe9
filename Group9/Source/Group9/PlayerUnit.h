@@ -48,6 +48,7 @@ public:
 	void MoveRight(float);
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Stats")
 		bool bIsMoving{0};
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Movement")
 	FVector MovementVector{ 0.f,0.f,0.f };
 	UPROPERTY(EditAnywhere, Category = "Stats")
 		float MovementSpeed{ 400 };
@@ -57,6 +58,7 @@ public:
 		bool bUseMousePosistion{ 0 };
 	void RotateToMouse();
 	APlayerController* PC{nullptr};
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
 	bool bUseLocalDirections = false;
 	//Health
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Stats")
