@@ -16,13 +16,6 @@ class GROUP9_API USaveManager : public USaveGame
 
 public:
 	//Player stuff
-	//Location
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-	FVector PlayerLocation;
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		FVector Level1PlayerLocation;
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		FVector Level2PlayerLocation;
 	//Health
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerCurrentHealth;
@@ -34,33 +27,25 @@ public:
 	//Health packs
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 	float PlayerHealthpackCount;
-	
+	//Keys
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-	int CurrentSavePointIndex;
-
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-	TArray<int> OpenDoorsIndexes;
-
+		int PlayerKeyAmount;
+	//CurrentLevel
 	UPROPERTY(VisibleAnywhere, Category = Basic)
 		FString CurrentLevelName;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		int Level1SavePointIndex;
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		int Level2SavePointIndex;
 
+	//Level Specific stuff
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool LevelHasIndex = false;
+		TArray<int> DoorsIndexes;
+	//Location
 	UPROPERTY(VisibleAnywhere, Category = Basic)
-		bool Level2HasIndex = false;
+		FVector PlayerLocation;
+	//Savepoint
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		int CurrentSavePointIndex;
+	//Doors that are open
+	UPROPERTY(VisibleAnywhere, Category = Basic)
+		TArray<int> OpenDoorsIndexes;
 
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		int PlayerKeyAmount;
-
-	//Level 1 Doors and rooms
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		TArray<int> Level1DoorsIndexes;
-	//Level 2 Doors and rooms
-	UPROPERTY(VisibleAnywhere, Category = Basic)
-		TArray<int> Level2DoorsIndexes;
 };

@@ -167,136 +167,88 @@ void ALevelManager::DoSpawning() {
 }
 
 void ALevelManager::SaveTheGame() {
-	//Find and override the previous save file
-	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
-	if (!SaveGameInstance) {
-		SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	}
-
-	UE_LOG(LogTemp, Log, TEXT("Started saving"));
+	//Player stats
+	USaveManager* PlayerStats = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	if (PlayerUnit) {
-		//Only find the statics of the player, and save what level they are on
-		SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
+		PlayerStats->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
+		PlayerStats->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
 
-		SaveGameInstance->PlayerCurrentHealth = PlayerUnit->CurrentHealth;
-		SaveGameInstance->PlayerHealthpackCount = PlayerUnit->HealthPackCount;
+		PlayerStats->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
+		PlayerStats->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
 
-		SaveGameInstance->PlayerAmmoCount = PlayerUnit->CurrentAmmunition;
-		SaveGameInstance->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
-
-		SaveGameInstance->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-		SaveGameInstance->PlayerKeyAmount = PlayerUnit->KeyAmount;
+		PlayerStats->PlayerKeyAmount = PlayerUnit->KeyAmount;
 	}
 
+	//Level specific saving
+	//Find and override the previous save file
+	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	
+	//Find savepoint index
+	for (int i{ 0 }; i < SaveStations.Num(); i++) {
+		if (SaveStations[i]->bIAmCurrentSpawnPoint) {
+			SaveGameInstance->CurrentSavePointIndex = i;
+		}
+	}
 	//Find open doors
-	for (int i = 0; i < Doors.Num(); i++)
-	{
+	for (int i{ 0 }; i < Doors.Num(); i++) {
 		if (Doors[i]->bIsOpen) {
 			SaveGameInstance->OpenDoorsIndexes.Add(i);
 		}
 	}
+	//Find player location
+	SaveGameInstance->PlayerLocation = PlayerUnit->GetActorLocation();
 
-	//Find current Savepoint
-
-	for (int i = 0; i < SaveStations.Num(); i++)
-	{
-		if (SaveStations[i]->bIAmCurrentSpawnPoint) {
-			if (SaveGameInstance->CurrentLevelName == "Level1") {
-				UE_LOG(LogTemp, Log, TEXT("Saved a savepoitnstation 1 index"));
-				SaveGameInstance->Level1SavePointIndex = i;
-				SaveGameInstance->LevelHasIndex = true;
-			}
-			else if (SaveGameInstance->CurrentLevelName == "Level2") {
-				UE_LOG(LogTemp, Log, TEXT("Saved a savepoitnstation 2 index"));
-				SaveGameInstance->Level2SavePointIndex = i;
-				SaveGameInstance->Level2HasIndex = true;
-			}
-		}
+	if (!SaveGameInstance) {
+		SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
 	}
 
+	//Find what level you are on
+	FString LevelNameToSave = "SaveFile" + UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 
-	//Save location
-	if (SaveGameInstance->CurrentLevelName == "Level1") {
-		SaveGameInstance->Level1PlayerLocation = PlayerUnit->GetActorLocation();
-		//Find open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (Doors[i]->bIsOpen) {
-				SaveGameInstance->Level1DoorsIndexes.Add(i);
-			}
-		}
-	}
-	else if (SaveGameInstance->CurrentLevelName == "Level2") {
-		SaveGameInstance->Level2PlayerLocation = PlayerUnit->GetActorLocation();
-		//Find open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (Doors[i]->bIsOpen) {
-				SaveGameInstance->Level2DoorsIndexes.Add(i);
-			}
-		}
-	}
-
-	UGameplayStatics::SaveGameToSlot(SaveGameInstance, TEXT("SaveFile"), 0);
+	
+	UGameplayStatics::SaveGameToSlot(PlayerStats, TEXT("PlayerStats"), 0);
+	UGameplayStatics::SaveGameToSlot(SaveGameInstance, LevelNameToSave, 0);
 	UE_LOG(LogTemp, Log, TEXT("Saved Game"));
 }
 void ALevelManager::LoadTheGame() {
+	//Player stats loading
+	USaveManager* PlayerStats = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerStats"), 0));
+	if (!PlayerStats) {
+		return;
+	};
+	//Give the player stats
+	if (PlayerUnit) {
+		PlayerUnit->CurrentAmmunition = PlayerStats->PlayerAmmoCount;
+		PlayerUnit->CurrentMagazineAmmo = PlayerStats->CurrentMagazineAmount;
+		PlayerUnit->CurrentHealth = PlayerStats->PlayerCurrentHealth;
+		PlayerUnit->HealthPackCount = PlayerStats->PlayerHealthpackCount;
+		PlayerUnit->KeyAmount = PlayerStats->PlayerKeyAmount;
+	}
 
+	//Level specific loading
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
+	//Find name to load
+	FString CurrentLevelName = "SaveFile" + UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
+	//Load from the name
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(CurrentLevelName, 0));
 	//Return if there is no savegame instance
 	if (!SaveGameInstance) {
 		UE_LOG(LogTemp, Log, TEXT("Found no Save Game File to Load"));
 		return;
 	}
-	//Give the player stats
-	if (PlayerUnit) {
-		PlayerUnit->CurrentAmmunition = SaveGameInstance->PlayerAmmoCount;
-		PlayerUnit->CurrentMagazineAmmo = SaveGameInstance->CurrentMagazineAmount;
-		PlayerUnit->CurrentHealth = SaveGameInstance->PlayerCurrentHealth;
-		PlayerUnit->HealthPackCount = SaveGameInstance->PlayerHealthpackCount;
-		PlayerUnit->KeyAmount = SaveGameInstance->PlayerKeyAmount;
+	//Set save point station
+	SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
+
+	//Set open doors
+	for (int i = 0; i < Doors.Num(); i++) {
+		if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {
+			UE_LOG(LogTemp, Log, TEXT("Opened door at index %i"), i);
+			Doors[i]->OpenDoor();
+		}
 	}
+
+	//Set player location
+	PlayerUnit->SetActorLocation(SaveGameInstance->PlayerLocation);
 	
-	//Dont do anything from here incase there is no player
-	if (!PlayerUnit) {
-		return;
-	}
-	FString CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
-	if (CurrentLevelName == "Level1") {
-		if (!SaveGameInstance->LevelHasIndex) {
-			return;
-		}
-
-		//Open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (SaveGameInstance->Level1DoorsIndexes.Contains(i)) {
-				Doors[i]->OpenDoor();
-			}
-		}
-		SaveStations[SaveGameInstance->Level1SavePointIndex]->UsedFromLoader(true, PlayerUnit);
-		PlayerUnit->SetActorLocation(SaveGameInstance->Level1PlayerLocation);
-
-	}
-	else if (CurrentLevelName == "Level2") {
-		if (!SaveGameInstance->Level2HasIndex) {
-			return;
-		}
-
-		//Open doors
-		for (int i = 0; i < Doors.Num(); i++)
-		{
-			if (SaveGameInstance->Level2DoorsIndexes.Contains(i)) {
-				Doors[i]->OpenDoor();
-			}
-		}
-		SaveStations[SaveGameInstance->Level2SavePointIndex]->UsedFromLoader(true, PlayerUnit);
-		PlayerUnit->SetActorLocation(SaveGameInstance->Level2PlayerLocation);
-
-	}
-	
-
 	UE_LOG(LogTemp, Log, TEXT("Loaded Game"));
 }
