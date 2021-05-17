@@ -104,6 +104,7 @@ public:
 	FString AmmoStringToDisplay{""};
 	//Level manager
 	void GetLevelManager(class ALevelManager*);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "General")
 	class ALevelManager* LevelManager;
 	//Test save and loading
 	void SaveGame();

@@ -62,8 +62,11 @@ void ALevelManager::BeginPlay()
 void ALevelManager::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
+
 	CheckEnemies();
+
 	CheckPlayer();
+
 	if (bDoSpawning) {
 		currentTime += DeltaTime;
 		if (PlayerUnit) {
@@ -74,6 +77,17 @@ void ALevelManager::Tick(float DeltaTime)
 		}
 		else {
 			UE_LOG(LogTemp, Log, TEXT("LevelManager no player"));
+		}
+	}
+
+	if (bPlayerIsDead) {
+		if (CurrentDeathTimer >= DeathTimer) {
+			CurrentDeathTimer = 0;
+			bPlayerIsDead = false;
+			PlayerDead();
+		}
+		else {
+			CurrentDeathTimer += DeltaTime;
 		}
 	}
 }
@@ -96,22 +110,11 @@ void ALevelManager::CheckPlayer()
 	//Check player death
 	if (PlayerUnit->GetActorLocation().Z <= KillPlayerZValue) {
 
-		UE_LOG(LogTemp, Log, TEXT("Player under kill Z value"));
-		if (bLoadOnPlayerDeath) {
-			LoadTheGame();
-			return;
-		}
-		if (PlayerUnit->CurrentSavePointStation) {
-			ASavePointStation* PlayersSavePoint = PlayerUnit->CurrentSavePointStation;
-			FVector NewLocation = PlayersSavePoint->GetActorLocation();
-			NewLocation.X += 100;
-			PlayerUnit->SetActorLocation(NewLocation);
-		}
-		else {
-			FVector NewLocation = FVector(0.f, 0.f, 0.f);
-			PlayerUnit->SetActorLocation(NewLocation);
-		}
+		bPlayerIsDead = true;
 		
+	}
+	else if (PlayerUnit->bIsDead) {
+		bPlayerIsDead = true;
 	}
 
 }
@@ -164,6 +167,13 @@ void ALevelManager::DoSpawning() {
 		}
 	}
 	UE_LOG(LogTemp, Log, TEXT("Spawned enemies: %d"), ToSpawn);
+}
+
+void ALevelManager::PlayerDead()
+{
+	if (bLoadOnPlayerDeath) {
+		LoadTheGame();
+	}
 }
 
 void ALevelManager::SaveTheGame() {
