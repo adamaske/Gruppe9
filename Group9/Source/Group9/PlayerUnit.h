@@ -16,6 +16,12 @@ class GROUP9_API APlayerUnit : public ACharacter
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* CameraBoom;
+	
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* GunMesh;
+
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* FlashlightMesh;
 public:
 	// Sets default values for this character's properties
 	APlayerUnit();
@@ -98,6 +104,7 @@ public:
 	FString AmmoStringToDisplay{""};
 	//Level manager
 	void GetLevelManager(class ALevelManager*);
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "General")
 	class ALevelManager* LevelManager;
 	//Test save and loading
 	void SaveGame();

@@ -71,8 +71,13 @@ public:
 	UPROPERTY(EditAnywhere)
 		bool bLoadOnPlayerDeath{ 1 };
 
-	
-public:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Player")
+		float DeathTimer{ 2.f };
+	UPROPERTY(EditAnywhere, BlueprintReadOnly,Category = "Player")
+		float CurrentDeathTimer{ 0.f };
+	bool bPlayerIsDead{ 0 };
+
+	void PlayerDead();
 	UFUNCTION(BlueprintCallable)
 	void SaveTheGame();
 	UFUNCTION(BlueprintCallable)
