@@ -19,6 +19,9 @@ ABipedEnemy::ABipedEnemy()
 	BipedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Biped Mesh"));
 	BipedMesh->SetupAttachment(RootComponent);
 
+	MeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeCollider"));
+	MeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::MeleeHit);
+	MeleeBox->SetupAttachment(RootComponent);
 }
 
 void ABipedEnemy::BeginPlay()
@@ -81,6 +84,7 @@ void ABipedEnemy::CloseMeleeAttack(float DeltaTime)
 			{
 				if (MeleeBox->GetGenerateOverlapEvents() == false)
 				{
+					
 					MeleeBox->SetGenerateOverlapEvents(true);
 				}
 			}
@@ -126,11 +130,18 @@ void ABipedEnemy::Tick(float DeltaTime)
 
 
 	// checks if playerunit exist to avoid hard crash, and player distance
-	if (!PlayerUnit || BipedStopRange < MeleeRange)
+	if (!PlayerUnit || BipedStopRange < MeleeRange && bIsAttacking == false)
 	{
 		MoveUnit(PlayerUnit->GetActorLocation());
 
 	}
+	if (!PlayerUnit || BipedStopRange < MeleeRange)
+	{
+		UE_LOG(LogTemp, Log, TEXT("Melee triggered"))
+			CloseMeleeAttack(DeltaTime);
+	}
+
+
 
 
 

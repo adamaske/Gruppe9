@@ -33,8 +33,9 @@ public:
 		float movementSpeed = 40;
 
 	UPROPERTY(EditAnywhere, Category = "Bi Enemy")
-		float BipedStopRange{ 100.f };
+		float BipedStopRange{ 200.f };
 
+	//Close melee attack
 	void CloseMeleeAttack(float);
 	UPROPERTY(EditAnywhere, Category = "Bi Melee")
 		class UBoxComponent* MeleeBox;
@@ -43,7 +44,7 @@ public:
 		float MeleeDamage{ 50 };
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Bi Melee")
-		bool bIsAttacking;
+		bool bIsAttacking{ 0 };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Melee")
 		float CurrentTime{ 0 };
@@ -58,11 +59,13 @@ public:
 		float MeleeEnd{ 0.85f };
 
 	bool bMeleeHit{ 0 };
+	
 
 	UFUNCTION()
 		void MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
 			bool bFromSweep, const FHitResult& SweepResult);
+
 
 	virtual void Tick(float DeltaTime) override;
 
