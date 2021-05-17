@@ -14,6 +14,7 @@
 
 ABipedEnemy::ABipedEnemy()
 {
+	//bPrimaryActorCanTick = true;
 	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComp"));
 
 	BipedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("Biped Mesh"));
@@ -29,16 +30,18 @@ void ABipedEnemy::BeginPlay()
 	Super::BeginPlay();
 
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
+	MeleeBox->SetGenerateOverlapEvents(false);
+
 }
 
 void  ABipedEnemy::MoveUnit(FVector LookAtTarget)
 {
 	//rotates to face player
-	FVector FaceTarget = FVector(LookAtTarget.X, LookAtTarget.Y, BipedMesh->GetComponentLocation().Z);
-	FVector StartLocation = BipedMesh->GetComponentLocation();
+	FVector FaceTarget = FVector(LookAtTarget.X, LookAtTarget.Y, GetActorLocation().Z);
+	FVector StartLocation = GetActorLocation();
 
 	FRotator RotateBiped = FVector(FaceTarget - StartLocation).Rotation();
-	BipedMesh->SetWorldRotation(RotateBiped);
+	SetActorRotation(RotateBiped);
 
 	//move to player
 	LookAtTarget.Z = GetActorLocation().Z;
@@ -125,26 +128,26 @@ void ABipedEnemy::Tick(float DeltaTime)
 
 	//Gets location of player and biped to measure the distance between them
 	FVector currentPlayerLocal = PlayerUnit->GetActorLocation();
-	FVector currentBipedLocal = BipedMesh->GetComponentLocation();
+	FVector currentBipedLocal = GetActorLocation();
 	float MeleeRange = FVector::Distance(currentPlayerLocal, currentBipedLocal);
 
-
+	if (bIsAttacking) {
+		CloseMeleeAttack(DeltaTime);
+		return;
+	}
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (!PlayerUnit || BipedStopRange < MeleeRange && bIsAttacking == false)
 	{
 		MoveUnit(PlayerUnit->GetActorLocation());
 
 	}
-	if (!PlayerUnit || BipedStopRange < MeleeRange)
+	UE_LOG(LogTemp, Log, TEXT("Current distance from player: %f"), MeleeRange);
+	if (MeleeRange <= BipedStopRange)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Melee triggered"))
-			CloseMeleeAttack(DeltaTime);
+		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
+		bIsAttacking = true;
+		//CloseMeleeAttack(DeltaTime);
 	}
-
-
-
-
-
 }
 float ABipedEnemy::PlayerDistance()
 {
