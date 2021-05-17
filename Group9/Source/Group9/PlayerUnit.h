@@ -16,6 +16,12 @@ class GROUP9_API APlayerUnit : public ACharacter
 
 	UPROPERTY(EditAnywhere)
 	class USpringArmComponent* CameraBoom;
+	
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* GunMesh;
+
+	UPROPERTY(EditAnywhere)
+		class UStaticMeshComponent* FlashlightMesh;
 public:
 	// Sets default values for this character's properties
 	APlayerUnit();
