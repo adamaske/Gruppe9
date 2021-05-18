@@ -50,4 +50,7 @@ public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Info")
 	FString UnitInformation{"InteractableUnit Information"};
+
+	UPROPERTY(EditAnywhere, Category = "Info")
+		bool bDoRotationAndLevitating{ 0 };
 };

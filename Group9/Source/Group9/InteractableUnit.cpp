@@ -9,7 +9,7 @@
 AInteractableUnit::AInteractableUnit()
 {
  	// Set this actor to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 	
 	InteractableMeshComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("MyMeshComponent"));
 	RootComponent = InteractableMeshComponent;
@@ -33,6 +33,12 @@ void AInteractableUnit::Tick(float DeltaTime)
 	Super::Tick(DeltaTime);
 
 	//Should check if the player is within range
+	if (bDoRotationAndLevitating) {
+		FRotator curZRot = GetActorRotation();
+		curZRot.Yaw += DeltaTime * 60.f;
+		SetActorRotation(curZRot);
+
+	}
 }
 
 void AInteractableUnit::InteractWithPlayer(APlayerUnit* player) 
