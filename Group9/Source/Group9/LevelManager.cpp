@@ -109,11 +109,26 @@ void ALevelManager::CheckEnemies() {
 			AliveEnemies[i]->Destroy();
 			AliveEnemies.RemoveAt(i);
 			CurrentEnemiesCount--;
+
+			//Drop
 		}
 	}
 
 }
-
+void ALevelManager::DoDrop(FVector location) {
+	if (PlayerUnit->CurrentAmmunition < PlayerUnit->MaxMagazineSize || PlayerUnit->CurrentHealth <= 30.f) {
+		//Do drop
+		int index = FMath::FRandRange(0, PossibleDrops.Num() - 1);
+		GetWorld()->SpawnActor<AInteractableUnit>(PossibleDrops[index], location, GetActorRotation());
+	}
+	else {
+		float roll = FMath::FRandRange(0, 1);
+		if (roll >= chanceToDrop) {
+			int index = FMath::FRandRange(0, PossibleDrops.Num() - 1);
+			GetWorld()->SpawnActor<AInteractableUnit>(PossibleDrops[index], location, GetActorRotation());
+		}
+	}
+}
 void ALevelManager::CheckPlayer()
 {
 	//Check player death

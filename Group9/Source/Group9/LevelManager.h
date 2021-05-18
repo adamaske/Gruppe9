@@ -82,4 +82,11 @@ public:
 	void SaveTheGame();
 	UFUNCTION(BlueprintCallable)
 	void LoadTheGame();
+	
+	//Drop on enemy deaths
+	UPROPERTY(EditAnywhere)
+		TArray<TSubclassOf<class AInteractableUnit>> PossibleDrops;
+	void DoDrop(FVector location);
+	UPROPERTY(EditAnywhere)
+		float chanceToDrop{ 0.5 };
 };
