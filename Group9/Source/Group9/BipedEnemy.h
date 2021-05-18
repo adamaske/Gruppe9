@@ -44,6 +44,9 @@ public:
 		float DashRange{ 400.f };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
+		float DashSpeed{ 20.f };
+
+	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		class UBoxComponent* DashMeleeBox;
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
