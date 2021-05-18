@@ -121,7 +121,7 @@ void ABipedEnemy::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 	if (OtherActor->IsA(APlayerUnit::StaticClass()))
 	{
 		bMeleeHit = true;
-		UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Player"))
+		//UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Player"))
 			//casts to plyer unit
 			APlayerUnit* playerUnit = Cast<APlayerUnit>(OtherActor);
 		playerUnit->TakeDamage(MeleeDamage);
@@ -133,7 +133,7 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 	CurrentDashChargeTime += DeltaTime;
 	if (CurrentDashChargeTime >= DashChargeTime + DashMovementEnd)
 	{
-		UE_LOG(LogTemp, Log, TEXT(" Not DASHING"));
+		//UE_LOG(LogTemp, Log, TEXT(" Not DASHING"));
 		//Stop moving
 		//Stop attacking
 		if (DashMeleeBox->GetGenerateOverlapEvents() == true)
@@ -152,7 +152,7 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 	{
 		
 
-		UE_LOG(LogTemp, Log, TEXT("DASHING"));
+		//UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
 		FVector ChargeVector = GetActorForwardVector() * DashSpeed;
 		AddActorLocalOffset(-ChargeVector);
@@ -228,7 +228,7 @@ void ABipedEnemy::Tick(float DeltaTime)
 		MoveUnit(PlayerUnit->GetActorLocation());
 
 	}
-	UE_LOG(LogTemp, Log, TEXT("Current distance from player: %f"), MeleeRange);
+	//UE_LOG(LogTemp, Log, TEXT("Current distance from player: %f"), MeleeRange);
 	if (MeleeRange <= BipedStopRange)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
@@ -238,7 +238,7 @@ void ABipedEnemy::Tick(float DeltaTime)
 	}
 	if (DashRange >= MeleeRange)
 	{
-		UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
+		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsCharging = true;
 		DashMeleeAttack(DeltaTime);
 		return;

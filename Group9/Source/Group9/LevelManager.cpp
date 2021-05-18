@@ -41,6 +41,15 @@ void ALevelManager::BeginPlay()
 		{
 			Rooms.Add(Cast<ARoom>(FoundActors[i]));
 		}
+
+		/*FoundActors.Empty();
+		SaveStations.Empty();
+		UGameplayStatics::GetAllActorsOfClass(GetWorld(), ASavePointStation::StaticClass() , FoundActors);
+		for (int i = 0; i < FoundActors.Num(); i++)
+		{
+			SaveStations.Add(Cast<ASavePointStation>(FoundActors[i]));
+			UE_LOG(LogTemp, Log, TEXT("Added savepoint station"));
+		}*/
 	}
 	
 	APlayerController* MyController = GetWorld()->GetFirstPlayerController();
@@ -247,8 +256,8 @@ void ALevelManager::LoadTheGame() {
 		return;
 	}
 	//Set save point station
-	SaveStations[SaveGameInstance->CurrentSavePointIndex]->InteractWithPlayer(PlayerUnit);
-
+	SaveStations[SaveGameInstance->CurrentSavePointIndex]->SetToThisFromLoading(PlayerUnit);
+	UE_LOG(LogTemp, Log, TEXT("Set save station %f"), SaveGameInstance->CurrentSavePointIndex);
 	//Set open doors
 	for (int i = 0; i < Doors.Num(); i++) {
 		if (SaveGameInstance->OpenDoorsIndexes.Contains(i)) {

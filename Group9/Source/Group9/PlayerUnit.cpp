@@ -54,7 +54,7 @@ void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurrentHealth = MaxHealth;
+	//CurrentHealth = MaxHealth;
 
 	PC = Cast<APlayerController>(GetController());
 	
@@ -235,7 +235,7 @@ void APlayerUnit::Shoot() {
 				UWorld* World = GetWorld();
 				if (World) {
 					//Spawn the bulletblueprint at actor location + 50cm forward, and with actor rotaiton
-					ShakeCamera(false);
+					ShakeCamera(ShootShake);
 					World->SpawnActor<ABullet>(BulletBlueprint, GetActorLocation() + FVector(50.f, 0.f, 0.f), GetActorRotation());
 					//use 1 ammo
 					CurrentMagazineAmmo -= 1;
@@ -278,7 +278,7 @@ void APlayerUnit::Reload(float DeltaTime) {
 			//Dont reload anymore
 			bIsReloading = false;
 			//Jucieness
-			ShakeCamera(false);
+			ShakeCamera(ShootShake);
 			PlaySound(ReloadSound);
 		}
 	}
