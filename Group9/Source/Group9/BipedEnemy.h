@@ -51,7 +51,11 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		float DashChargeTime{ 2 };
+
 	float DashMovementEnd{ 0.5f };
+
+	float DashHitTime{ 0 };
+
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		float CurrentDashChargeTime{ 0 };
 

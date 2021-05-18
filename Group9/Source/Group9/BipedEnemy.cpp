@@ -113,18 +113,18 @@ void ABipedEnemy::CloseMeleeAttack(float DeltaTime)
 void ABipedEnemy::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//prevents hit stacking
-	if (bMeleeHit)
+	if (bDashhit)
 	{
 		return;
 	}
 	//checks if hit overlaps with playerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass()))
 	{
-		bMeleeHit = true;
-		//UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Player"))
+		bDashhit = true;
+		UE_LOG(LogTemp, Log, TEXT("Dash Attack Hit Player"))
 			//casts to plyer unit
 			APlayerUnit* playerUnit = Cast<APlayerUnit>(OtherActor);
-		playerUnit->TakeDamage(MeleeDamage);
+		playerUnit->TakeDamage(DashDamage);
 	}
 }
 
@@ -148,24 +148,17 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 
 		return;
 	}
-	if (CurrentDashChargeTime >= DashChargeTime)
+	if (DashHitTime >= DashChargeTime)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
 		FVector ChargeVector = GetActorLocation() + (GetActorForwardVector() * DashSpeed * DeltaTime);
 		SetActorLocation(ChargeVector);
-	}
-	else 
-	{
-		CurrentDashChargeTime += DeltaTime;
-	}
-	//finds how much has gone to determine the attack rate
-	/*
-	else
-	{//ignore if enemy has allready struck player
+
+		//ignore if enemy has allready struck player
 		if (!bDashhit)
 		{//if the timer is outside the set attack cycle, then dont check overlap
-			if (CurrentDashChargeTime < DashStart || CurrentDashChargeTime >= DashEnd)
+			if (DashHitTime < DashStart || DashHitTime >= DashEnd)
 			{	//deactive collison box
 				if (DashMeleeBox->GetGenerateOverlapEvents() == true)
 				{
@@ -173,7 +166,7 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 				}
 			}
 			//if the timer is inside the melee cycle then check for overlap
-			if (CurrentDashChargeTime > DashStart && CurrentDashChargeTime < DashEnd)
+			if (DashHitTime > DashStart && DashHitTime < DashEnd)
 			{
 				if (DashMeleeBox->GetGenerateOverlapEvents() == false)
 				{
@@ -190,10 +183,9 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 			}
 		}
 		//adds deltatime to timer for melee cycle
-		CurrentDashChargeTime += DeltaTime;
-	}*/
-
-
+		DashHitTime += DeltaTime;
+	}
+	
 }
 
 void ABipedEnemy::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
