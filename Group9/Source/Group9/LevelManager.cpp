@@ -211,6 +211,8 @@ void ALevelManager::SaveTheGame() {
 		PlayerStats->CurrentMagazineAmount = PlayerUnit->CurrentMagazineAmmo;
 
 		PlayerStats->PlayerKeyAmount = PlayerUnit->KeyAmount;
+
+		PlayerStats->CurrentLevelName = UGameplayStatics::GetCurrentLevelName(GetWorld(), true);
 	}
 
 	//Level specific saving

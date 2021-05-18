@@ -25,10 +25,10 @@ void AMainMenuActor::BeginPlay()
 	
 
 	USaveManager* SaveGameInstance = Cast<USaveManager>(UGameplayStatics::CreateSaveGameObject(USaveManager::StaticClass()));
-	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("SaveFile"), 0));
+	SaveGameInstance = Cast<USaveManager>(UGameplayStatics::LoadGameFromSlot(TEXT("PlayerStats"), 0));
 
-	if (!SaveGameInstance) {
-		LevelToLoad = "/Game/Maps/Level1";
+	if (!SaveGameInstance || SaveGameInstance->CurrentLevelName == "") {
+		LevelToLoad = "/Game/Maps/Kalle";
 	}
 	else {
 		LevelToLoad = "/Game/Maps/" + SaveGameInstance->CurrentLevelName;
