@@ -145,18 +145,19 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 		bIsCharging = false;
 		CurrentDashChargeTime = 0;
 		bIsCharging = false;
+		DashHitTime = 0;
 
 		return;
 	}
-	if (DashHitTime >= DashChargeTime)
+	if (CurrentDashChargeTime >= DashChargeTime)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("DASHING"));
+		UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
 		FVector ChargeVector = GetActorLocation() + (GetActorForwardVector() * DashSpeed * DeltaTime);
 		SetActorLocation(ChargeVector);
 
 		//ignore if enemy has allready struck player
-		if (!bDashhit)
+		/*if (!bDashhit)
 		{//if the timer is outside the set attack cycle, then dont check overlap
 			if (DashHitTime < DashStart || DashHitTime >= DashEnd)
 			{	//deactive collison box
@@ -183,7 +184,7 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 			}
 		}
 		//adds deltatime to timer for melee cycle
-		DashHitTime += DeltaTime;
+		DashHitTime += DeltaTime;*/
 	}
 	
 }
