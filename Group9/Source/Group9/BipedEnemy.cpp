@@ -23,6 +23,10 @@ ABipedEnemy::ABipedEnemy()
 	MeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeCollider"));
 	MeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::MeleeHit);
 	MeleeBox->SetupAttachment(RootComponent);
+
+	DashMeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DashCollider"));
+	DashMeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedEnemy::MeleeHit);
+	DashMeleeBox->SetupAttachment(RootComponent);
 }
 
 void ABipedEnemy::BeginPlay()
@@ -126,22 +130,12 @@ void ABipedEnemy::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 {
-	bIsCharging = true;
-	
-	if (bIsCharging == true)
+	CurrentDashChargeTime += DeltaTime;
+	if (CurrentDashChargeTime >= DashChargeTime + DashMovementEnd)
 	{
-		CurrentDashChargeTime += DeltaTime;
-		if (CurrentDashChargeTime >= DashChargeTime)
-		{
-			FVector playerLocation = PlayerUnit->GetActorLocation();
-			FVector ChargeVector = playerLocation * GetActorForwardVector()* movementSpeed;
-		}
-	}
-	//finds how much has gone to determine the attack rate
-	/*if (CurrentDashChargeTime >= DashChargeTime)
-	{
-		//resets melee attack timer after its done 1 cycle
-		//disables melee box collider if overlap
+		UE_LOG(LogTemp, Log, TEXT(" Not DASHING"));
+		//Stop moving
+		//Stop attacking
 		if (DashMeleeBox->GetGenerateOverlapEvents() == true)
 		{
 			DashMeleeBox->SetGenerateOverlapEvents(false);
@@ -150,7 +144,25 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 		bDashhit = false;
 		bIsCharging = false;
 		CurrentDashChargeTime = 0;
+		bIsCharging = false;
+
+		return;
 	}
+	if (CurrentDashChargeTime >= DashChargeTime)
+	{
+		
+
+		UE_LOG(LogTemp, Log, TEXT("DASHING"));
+		//FVector playerLocation = PlayerUnit->GetActorLocation();
+		FVector ChargeVector = GetActorForwardVector() * movementSpeed;
+		AddActorLocalOffset(-ChargeVector);
+	}
+	else 
+	{
+		CurrentDashChargeTime += DeltaTime;
+	}
+	//finds how much has gone to determine the attack rate
+	/*
 	else
 	{//ignore if enemy has allready struck player
 		if (!bDashhit)
@@ -194,18 +206,24 @@ void ABipedEnemy::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 void ABipedEnemy::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-
+	//Dont do anything if tghere is no player refrence
+	if (!PlayerUnit) {
+		return;
+	}
 	//Gets location of player and biped to measure the distance between them
 	FVector currentPlayerLocal = PlayerUnit->GetActorLocation();
 	FVector currentBipedLocal = GetActorLocation();
 	float MeleeRange = FVector::Distance(currentPlayerLocal, currentBipedLocal);
-
+	if (bIsCharging) {
+		DashMeleeAttack(DeltaTime);
+		return;
+	}
 	if (bIsAttacking) {
 		CloseMeleeAttack(DeltaTime);
 		return;
 	}
 	// checks if playerunit exist to avoid hard crash, and player distance
-	if (!PlayerUnit || BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
+	if (BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
 	{
 		MoveUnit(PlayerUnit->GetActorLocation());
 
@@ -216,10 +234,14 @@ void ABipedEnemy::Tick(float DeltaTime)
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsAttacking = true;
 		//CloseMeleeAttack(DeltaTime);
+		return;
 	}
-	if (!PlayerUnit || DashRange == MeleeRange )
+	if (DashRange >= MeleeRange)
 	{
+		UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
+		bIsCharging = true;
 		DashMeleeAttack(DeltaTime);
+		return;
 	}
 }
 float ABipedEnemy::PlayerDistance()
