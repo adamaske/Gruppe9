@@ -23,7 +23,7 @@ public:
 	virtual void InteractWithPlayer(class APlayerUnit*) override;
 	void UsedFromLoader(bool DoSaving, class APlayerUnit*);
 	void RemoveAsSavePointStation();
-
+	void SetToThisFromLoading(APlayerUnit*);
 	UPROPERTY(VisibleAnywhere)
 		bool bIAmCurrentSpawnPoint{ 0 };
 	UPROPERTY(EditAnywhere)

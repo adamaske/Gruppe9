@@ -54,7 +54,7 @@ void APlayerUnit::BeginPlay()
 {
 	Super::BeginPlay();
 	
-	CurrentHealth = MaxHealth;
+	//CurrentHealth = MaxHealth;
 
 	PC = Cast<APlayerController>(GetController());
 	
