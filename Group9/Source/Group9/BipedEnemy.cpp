@@ -150,12 +150,10 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 	}
 	if (CurrentDashChargeTime >= DashChargeTime)
 	{
-		
-
 		//UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
-		FVector ChargeVector = GetActorForwardVector() * DashSpeed;
-		AddActorLocalOffset(-ChargeVector);
+		FVector ChargeVector = GetActorLocation() + (GetActorForwardVector() * DashSpeed * DeltaTime);
+		SetActorLocation(ChargeVector);
 	}
 	else 
 	{
