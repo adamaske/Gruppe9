@@ -16,6 +16,8 @@ class GROUP9_API ADoor : public AInteractableUnit
 	
 	UPROPERTY(EditAnywhere)
 		UStaticMeshComponent* DoorMesh;
+	UPROPERTY(EditAnywhere)
+		UStaticMeshComponent* OpenDoorMesh;
 public:
 	ADoor();
 	void OpenDoor();
@@ -27,5 +29,7 @@ public:
 
 	void InteractWithPlayer(class APlayerUnit*);
 
-	
+	UPROPERTY(EditAnywhere, Category = Info)
+		bool bSwapMeshes{ 0 };
+
 };
