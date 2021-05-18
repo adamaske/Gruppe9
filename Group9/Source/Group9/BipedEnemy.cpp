@@ -154,7 +154,7 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 
 		UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
-		FVector ChargeVector = GetActorForwardVector() * movementSpeed;
+		FVector ChargeVector = GetActorForwardVector() * DashSpeed;
 		AddActorLocalOffset(-ChargeVector);
 	}
 	else 
