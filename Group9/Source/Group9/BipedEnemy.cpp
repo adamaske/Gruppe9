@@ -113,18 +113,18 @@ void ABipedEnemy::CloseMeleeAttack(float DeltaTime)
 void ABipedEnemy::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	//prevents hit stacking
-	if (bDashhit)
+	if (bMeleeHit)
 	{
 		return;
 	}
 	//checks if hit overlaps with playerUnit
 	if (OtherActor->IsA(APlayerUnit::StaticClass()))
 	{
-		bDashhit = true;
+		bMeleeHit = true;
 		UE_LOG(LogTemp, Log, TEXT("Dash Attack Hit Player"))
 			//casts to plyer unit
 			APlayerUnit* playerUnit = Cast<APlayerUnit>(OtherActor);
-		playerUnit->TakeDamage(DashDamage);
+		playerUnit->TakeDamage(MeleeDamage);
 	}
 }
 
@@ -190,7 +190,20 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 
 void ABipedEnemy::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-
+	//prevents hit stacking
+	if (bDashhit)
+	{
+		return;
+	}
+	//checks if hit overlaps with playerUnit
+	if (OtherActor->IsA(APlayerUnit::StaticClass()))
+	{
+		bDashhit = true;
+		UE_LOG(LogTemp, Log, TEXT("Dash Attack Hit Player"))
+			//casts to plyer unit
+			APlayerUnit* playerUnit = Cast<APlayerUnit>(OtherActor);
+		playerUnit->TakeDamage(DashDamage);
+	}
 }
 
 void ABipedEnemy::Tick(float DeltaTime)
