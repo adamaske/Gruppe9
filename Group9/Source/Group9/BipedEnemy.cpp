@@ -130,9 +130,10 @@ void ABipedEnemy::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Oth
 
 void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 {
-	
+	CurrentDashChargeTime += DeltaTime;
 	if (CurrentDashChargeTime >= DashChargeTime + DashMovementEnd)
 	{
+		UE_LOG(LogTemp, Log, TEXT(" Not DASHING"));
 		//Stop moving
 		//Stop attacking
 		if (DashMeleeBox->GetGenerateOverlapEvents() == true)
@@ -144,11 +145,12 @@ void ABipedEnemy::DashMeleeAttack(float DeltaTime)
 		bIsCharging = false;
 		CurrentDashChargeTime = 0;
 		bIsCharging = false;
+
 		return;
 	}
 	if (CurrentDashChargeTime >= DashChargeTime)
 	{
-		//CurrentDashChargeTime += DeltaTime;
+		
 
 		UE_LOG(LogTemp, Log, TEXT("DASHING"));
 		//FVector playerLocation = PlayerUnit->GetActorLocation();
