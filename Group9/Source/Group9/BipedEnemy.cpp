@@ -238,14 +238,14 @@ void ABipedEnemy::Tick(float DeltaTime)
 		//CloseMeleeAttack(DeltaTime);
 		return;
 	}
-	/*
+
 	if (DashRange >= MeleeRange)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsCharging = true;
 		DashMeleeAttack(DeltaTime);
 		return;
-	}*/
+	}
 }
 float ABipedEnemy::PlayerDistance()
 {
