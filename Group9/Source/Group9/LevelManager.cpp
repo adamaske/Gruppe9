@@ -106,16 +106,21 @@ void ALevelManager::CheckEnemies() {
 	for (int i = 0; i < AliveEnemies.Num(); i++)
 	{
 		if (AliveEnemies[i]->bIsDead) {
+
+			//Drop
+			DoDrop(AliveEnemies[i]->GetActorLocation());
+
 			AliveEnemies[i]->Destroy();
 			AliveEnemies.RemoveAt(i);
 			CurrentEnemiesCount--;
 
-			//Drop
+			
 		}
 	}
 
 }
 void ALevelManager::DoDrop(FVector location) {
+	location.Z += 100;
 	if (PlayerUnit->CurrentAmmunition < PlayerUnit->MaxMagazineSize || PlayerUnit->CurrentHealth <= 30.f) {
 		//Do drop
 		int index = FMath::FRandRange(0, PossibleDrops.Num() - 1);
