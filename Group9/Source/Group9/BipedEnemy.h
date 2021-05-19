@@ -24,7 +24,7 @@ public:
 		UCapsuleComponent* CapCollider;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bi Enemy")
-		UStaticMeshComponent* BipedMesh;
+		class UStaticMeshComponent* BipedMesh;
 
 
 	void MoveUnit(FVector LookAtTarget);
@@ -33,7 +33,7 @@ public:
 		float movementSpeed = 40;
 
 	UPROPERTY(EditAnywhere, Category = "Bi Enemy")
-		float BipedStopRange{ 200.f };
+		float BipedStopRange{ 150.f };
 
 	//dash attack
 	
@@ -52,7 +52,7 @@ public:
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		float DashChargeTime{ 2 };
 
-	float DashMovementEnd{ 0.5f };
+	float DashMovementEnd{ 0.4f };
 
 	float DashHitTime{ 0 };
 
@@ -60,10 +60,10 @@ public:
 		float CurrentDashChargeTime{ 0 };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
-		float DashStart{ 0.65f };
+		float DashStart{ 0.f };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
-		float DashEnd{ .85f };
+		float DashEnd{ 0.3f };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		float DashDamage{ 50 };
@@ -71,6 +71,8 @@ public:
 	bool bIsCharging{ 0 };
 
 	bool bDashhit{ 0 };
+
+	bool bIsDashing{ 0 };
 
 	UFUNCTION()
 		void DashHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
