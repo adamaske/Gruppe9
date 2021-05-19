@@ -201,7 +201,7 @@ void ALevelManager::DoSpawning() {
 void ALevelManager::PlayerDead()
 {
 	if (bLoadOnPlayerDeath) {
-		LoadTheGame();
+		UGameplayStatics::OpenLevel(GetWorld(), FName(UGameplayStatics::GetCurrentLevelName(GetWorld(), true)));
 	}
 }
 
@@ -264,6 +264,7 @@ void ALevelManager::LoadTheGame() {
 		PlayerUnit->CurrentHealth = PlayerStats->PlayerCurrentHealth;
 		PlayerUnit->HealthPackCount = PlayerStats->PlayerHealthpackCount;
 		PlayerUnit->KeyAmount = PlayerStats->PlayerKeyAmount;
+		PlayerUnit->bIsDead = false;
 	}
 
 	//Level specific loading
