@@ -139,6 +139,6 @@ private:
 
 	FTimerHandle MeleeTimerHandle;
 
-	APlayerUnit* PlayerUnit;
+	class APlayerUnit* PlayerUnit;
 
 };
