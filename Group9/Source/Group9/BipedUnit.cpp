@@ -76,6 +76,7 @@ void ABipedUnit::CloseMeleeAttack(float DeltaTime)
 		//resets melee attack
 		bMeleeHit = false;
 		bIsAttacking = false;
+		AnimIsAttacking = false;
 		CurrentTime = 0;
 	}
 	else
@@ -121,6 +122,7 @@ void ABipedUnit::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	//prevents hit stacking
 	if (bMeleeHit)
 	{
+		AnimIsAttacking = false;
 		return;
 	}
 	//checks if hit overlaps with playerUnit
@@ -180,6 +182,7 @@ void ABipedUnit::TakeDamage(float dmg)
 	if (CurrentHealth <= 0) 
 	{
 		//Die
+		AnimDeath = true;
 		UE_LOG(LogTemp, Log, TEXT("Enemy dead"));
 		bIsDead = true;
 
@@ -192,6 +195,7 @@ void ABipedUnit::TakeDamage(float dmg)
 void ABipedUnit::DashMeleeAttack(float DeltaTime)
 {
 	CurrentDashChargeTime += DeltaTime;
+	AnimIsCharging = true;
 	if (CurrentDashChargeTime >= DashChargeTime + DashMovementEnd)
 	{
 		//UE_LOG(LogTemp, Log, TEXT(" Not DASHING"));
@@ -209,7 +213,9 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 		DashStart = 0;
 		DashHitTime = 0;
 		bIsDashing = false;
-
+		AnimIsDashing = false;
+		AnimDasAttacking = false;
+		AnimIsCharging = false;;
 		return;
 
 
@@ -217,27 +223,18 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 	}
 	if (CurrentDashChargeTime >= DashChargeTime)
 	{
-		//UE_LOG(LogTemp, Log, TEXT("DASHING"));
-		//FVector playerLocation = PlayerUnit->GetActorLocation();
 		bIsDashing = true;
+		AnimIsDashing = true;
 		FVector ChargeVector = GetActorLocation() + (GetActorForwardVector() * DashSpeed * DeltaTime);
 		SetActorLocation(ChargeVector);
+		AnimDasAttacking = true;
 		if (DashMeleeBox->GetGenerateOverlapEvents() == false)
 		{
 			UE_LOG(LogTemp, Log, TEXT("sets overlap to true"));
 			DashMeleeBox->SetGenerateOverlapEvents(true);
-			//
+			
 		}
-
 	}
-
-	/*else
-	{//if melee attack has occured in current cycle, disable box to prevent damage stacking
-		if (DashMeleeBox->GetGenerateOverlapEvents() == true)
-		{
-			DashMeleeBox->SetGenerateOverlapEvents(false);
-		}
-	}*/
 }
 
 void ABipedUnit::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
@@ -289,6 +286,7 @@ void ABipedUnit::Tick(float DeltaTime)
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
 	{
+		AnimIsWalking = true;
 		AIController->MoveToActor(PlayerUnit, 200);
 		//MoveUnit(PlayerUnit->GetActorLocation());
 
@@ -298,6 +296,7 @@ void ABipedUnit::Tick(float DeltaTime)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsAttacking = true;
+		AnimIsAttacking = true;
 		//CloseMeleeAttack(DeltaTime);
 		return;
 	}

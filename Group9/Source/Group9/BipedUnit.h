@@ -75,6 +75,11 @@ public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
 		bool AnimIsDashing{ 0 };
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimDasAttacking{ 0 };
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimDeath{ 0 };
+
 
 	//dash attack
 
@@ -85,7 +90,7 @@ public:
 		float DashRange{ 400.f };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
-		float DashSpeed{ 20.f };
+		float DashSpeed{ 1500.f };
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		class UBoxComponent* DashMeleeBox;
