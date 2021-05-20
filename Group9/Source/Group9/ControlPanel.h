@@ -19,10 +19,11 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Control Panel")
 		UStaticMeshComponent* ControlPanelMesh;
 
-	
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Control Panel")
+		class ATurretUnit* MyTurret;
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void InteractWithPlayer(class ATurretUnit*);
+	virtual void InteractWithPlayer(class APlayerUnit*);
 };
