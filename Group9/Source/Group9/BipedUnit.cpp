@@ -275,7 +275,7 @@ void ABipedUnit::Tick(float DeltaTime)
 	FVector currentBipedLocal = GetActorLocation();
 
 	float MeleeRange = FVector::Distance(currentPlayerLocal, currentBipedLocal);
-/*
+
 	if (bIsCharging)
 	{
 		DashMeleeAttack(DeltaTime);
@@ -285,7 +285,7 @@ void ABipedUnit::Tick(float DeltaTime)
 	{
 		CloseMeleeAttack(DeltaTime);
 		return;
-	}*/
+	}
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
 	{
