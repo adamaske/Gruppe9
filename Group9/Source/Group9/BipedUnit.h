@@ -43,7 +43,7 @@ public:
 
 	void TakeDamage(float);
 
-
+	bool HasDashed{ 0 };
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI)
 		class USphereComponent* EnemyFOVSphere;
@@ -113,7 +113,7 @@ public:
 
 	UPROPERTY(EditAnywhere, Category = "Bi Dash")
 		float DashDamage{ 50 };
-
+	UPROPERTY(VisibleAnywhere, BlueprintReadonly)
 	bool bIsCharging{ 0 };
 
 	bool bDashhit{ 0 };

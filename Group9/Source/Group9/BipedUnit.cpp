@@ -78,6 +78,8 @@ void ABipedUnit::CloseMeleeAttack(float DeltaTime)
 		bIsAttacking = false;
 		AnimIsAttacking = false;
 		CurrentTime = 0;
+		
+		return;
 	}
 	else
 	{//ignore if enemy has allready struck player
@@ -122,7 +124,7 @@ void ABipedUnit::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 	//prevents hit stacking
 	if (bMeleeHit)
 	{
-		AnimIsAttacking = false;
+		
 		return;
 	}
 	//checks if hit overlaps with playerUnit
@@ -215,7 +217,8 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 		bIsDashing = false;
 		AnimIsDashing = false;
 		AnimDasAttacking = false;
-		AnimIsCharging = false;;
+		AnimIsCharging = false;
+		HasDashed = true;
 		return;
 
 
@@ -283,30 +286,34 @@ void ABipedUnit::Tick(float DeltaTime)
 		CloseMeleeAttack(DeltaTime);
 		return;
 	}
-	// checks if playerunit exist to avoid hard crash, and player distance
-	if (BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
-	{
-		AnimIsWalking = true;
-		AIController->MoveToActor(PlayerUnit, 200);
-		//MoveUnit(PlayerUnit->GetActorLocation());
-
-	}
+	
 	//UE_LOG(LogTemp, Log, TEXT("Current distance from player: %f"), MeleeRange);
 	if (MeleeRange <= BipedStopRange)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsAttacking = true;
 		AnimIsAttacking = true;
-		//CloseMeleeAttack(DeltaTime);
+		CloseMeleeAttack(DeltaTime);
 		return;
 	}
 
-	if (DashRange >= MeleeRange)
+	if (MeleeRange <= DashRange && !HasDashed)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
 		bIsCharging = true;
 		DashMeleeAttack(DeltaTime);
 		return;
+	}
+	//AIController->MoveToActor(PlayerUnit, 20);
+	// checks if playerunit exist to avoid hard crash, and player distance
+	if (bIsAttacking == false && bIsCharging == false)
+	{
+		AnimIsWalking = true;
+		AIController->MoveToActor(PlayerUnit, 1.f);
+		//AIController->
+		UE_LOG(LogTemp, Log, TEXT("TOld to move"));
+		//MoveUnit(PlayerUnit->GetActorLocation());
+
 	}
 }
 float ABipedUnit::PlayerDistance()
