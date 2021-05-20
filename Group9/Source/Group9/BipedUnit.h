@@ -25,6 +25,12 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bi Enemy")
 		class UStaticMeshComponent* BipedMesh;
 
+	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
+		float movementSpeed = 40;
+
+	UPROPERTY(EditAnywhere, Category = "Bi Enemy")
+		float BipedStopRange{ 150.f };
+
 	UPROPERTY(EditAnywhere)
 		bool bDestroyMyselfOnDeath{ 0 };
 
@@ -36,6 +42,8 @@ public:
 	bool bIsDead{ 0 };
 
 	void TakeDamage(float);
+
+
 
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI)
 		class USphereComponent* EnemyFOVSphere;
@@ -53,11 +61,20 @@ public:
 
 	void MoveToPlayer();*/
 
-	UPROPERTY(EditAnywhere, BluePrintReadWrite, Category = "Bi Enemy")
-		float movementSpeed = 40;
+	//Animations bools for BP
 
-	UPROPERTY(EditAnywhere, Category = "Bi Enemy")
-		float BipedStopRange{ 150.f };
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsAttacking{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsCharging{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsWalking{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsDashing{ 0 };
+
 
 	//dash attack
 
