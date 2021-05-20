@@ -18,7 +18,7 @@ void APlayerBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 	}
 	else if (OtherActor->IsA(ABipedUnit::StaticClass())) {
 		ABipedUnit* unit = Cast<ABipedUnit>(OtherActor);
-
+		unit->TakeDamage(damage);
 		this->Destroy();
 	}
 	else if(OtherActor->IsA(APlayerUnit::StaticClass())){

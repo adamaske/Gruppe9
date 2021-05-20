@@ -395,7 +395,7 @@ void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		//Cast the actor to a enemyunit
 		ABipedUnit* unit = Cast<ABipedUnit>(OtherActor);
 		//Call damage on enemy 
-		//unit->TakeDamage(MeleeAttackDamage);
+		unit->TakeDamage(MeleeAttackDamage);
 		//Juice
 		PlaySound(MeleeSound);
 		ShakeCamera(MeleeShake);
