@@ -25,6 +25,18 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Bi Enemy")
 		class UStaticMeshComponent* BipedMesh;
 
+	UPROPERTY(EditAnywhere)
+		bool bDestroyMyselfOnDeath{ 0 };
+
+	UPROPERTY(EditAnywhere)
+		float MaxHealth{ 100 };
+	UPROPERTY(EditAnywhere)
+		float CurrentHealth{ 100 };
+
+	bool bIsDead{ 0 };
+
+	virtual void TakeDamage(float);
+
 	/*UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = AI)
 		class USphereComponent* EnemyFOVSphere;
 

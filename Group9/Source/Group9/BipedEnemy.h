@@ -103,6 +103,19 @@ public:
 		float MeleeEnd{ 0.85f };
 
 	bool bMeleeHit{ 0 };
+
+	//Anim bools for BP
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsAttacking{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsCharging{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsWalking{ 0 };
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Animation for Biped")
+		bool AnimIsDashing{ 0 };
 	
 
 	UFUNCTION()

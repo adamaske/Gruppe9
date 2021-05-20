@@ -6,8 +6,8 @@
 #include "EnemyUnit.h"
 #include "PlayerUnit.h"
 #include "Components/PrimitiveComponent.h"
-#include "Components/SphereComponent.h"
 #include "Components/BoxComponent.h"
+#include "Components/CapsuleComponent.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Kismet/KismetSystemLibrary.h"
@@ -16,25 +16,16 @@ ABipedUnit::ABipedUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-	//bPrimaryActorCanTick = true;
-	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootCompBiped"));
-
-	BipedMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("BipedkjasdMesh"));
-	BipedMesh->SetupAttachment(RootComponent);
-	
-	//EnemyFOVSphere = CreateDefaultSubobject<USphereComponent>(TEXT("Enemy FOV Sphere"));
-	//EnemyFOVSphere->SetupAttachment(RootComponent);
-	//EnemyFOVSphere->InitSphereRadius(750.f);
 
 	GetCharacterMovement()->MaxWalkSpeed = 350.f;
 
 	MeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeCollider"));
 	MeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedUnit::MeleeHit);
-	MeleeBox->SetupAttachment(RootComponent);
+	MeleeBox->SetupAttachment(GetRootComponent());
 
 	DashMeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DashCollider"));
 	DashMeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedUnit::DashHit);
-	DashMeleeBox->SetupAttachment(RootComponent);
+	DashMeleeBox->SetupAttachment(DashMeleeBox);
 }
 
 void ABipedUnit::BeginPlay()
@@ -46,12 +37,6 @@ void ABipedUnit::BeginPlay()
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	MeleeBox->SetGenerateOverlapEvents(false);
 	DashMeleeBox->SetGenerateOverlapEvents(false);
-
-	//SetFocus(PlayerUnit);
-
-
-	//EnemyFOVSphere->OnComponentBeginOverlap.AddDynamic(this, &ABipedUnit::SphereOverlap);
-	//EnemyFOVSphere->OnComponentEndOverlap.AddDynamic(this, &ABipedUnit::SphereOverlapEnd);
 }
 
 /*void  ABipedUnit::MoveUnit(FVector LookAtTarget)
@@ -188,6 +173,22 @@ void ABipedUnit::MoveToPlayer()
 	}
 }*/
 
+void ABipedUnit::TakeDamage(float dmg)
+{
+	UE_LOG(LogTemp, Log, TEXT("Enemy took damage"));
+	CurrentHealth -= dmg;
+	if (CurrentHealth <= 0) 
+	{
+		//Die
+		UE_LOG(LogTemp, Log, TEXT("Enemy dead"));
+		bIsDead = true;
+
+		if (bIsDead && bDestroyMyselfOnDeath) {
+			this->Destroy();
+		}
+	}
+}
+
 void ABipedUnit::DashMeleeAttack(float DeltaTime)
 {
 	CurrentDashChargeTime += DeltaTime;
@@ -262,7 +263,7 @@ void ABipedUnit::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* Other
 void ABipedUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AIController->MoveToActor(PlayerUnit, 200);
+	//AIController->MoveToActor(PlayerUnit, 200);
 	//Dont do anything if tghere is no player refrence
 	if (!PlayerUnit)
 	{
@@ -284,10 +285,11 @@ void ABipedUnit::Tick(float DeltaTime)
 	{
 		CloseMeleeAttack(DeltaTime);
 		return;
-	}
+	}*/
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (BipedStopRange < MeleeRange && bIsAttacking == false && bIsCharging == false)
 	{
+		AIController->MoveToActor(PlayerUnit, 200);
 		//MoveUnit(PlayerUnit->GetActorLocation());
 
 	}
@@ -306,7 +308,7 @@ void ABipedUnit::Tick(float DeltaTime)
 		bIsCharging = true;
 		DashMeleeAttack(DeltaTime);
 		return;
-	}*/
+	}
 }
 float ABipedUnit::PlayerDistance()
 {
