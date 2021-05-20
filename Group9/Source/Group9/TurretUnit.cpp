@@ -7,7 +7,7 @@
 ATurretUnit::ATurretUnit()
 {
 	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComp"));
-	
+
 	TurretBaseMesh = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("turret base mesh"));
 	TurretBaseMesh->SetupAttachment(RootComponent);
 	
