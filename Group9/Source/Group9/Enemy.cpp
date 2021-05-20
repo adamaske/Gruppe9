@@ -77,29 +77,29 @@ void AEnemy::OnOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 }
 void AEnemy::MoveToTarget (APlayerUnit* PlayerUnit)
 {
-	//have to include "AIModule" in ProjectNameBuild.cs file for this to work
-	if (AIController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
+	////have to include "AIModule" in ProjectNameBuild.cs file for this to work
+	//if (AIController)
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
 
-		//https://docs.unrealengine.com/en-US/API/Runtime/AIModule/FAIMoveRequest/index.html
-		FAIMoveRequest AIMoverequest;
-		AIMoverequest.SetGoalActor(PlayerUnit);	//What to move towards
-		AIMoverequest.SetAcceptanceRadius(25.f);	//How close before stop
+	//	//https://docs.unrealengine.com/en-US/API/Runtime/AIModule/FAIMoveRequest/index.html
+	//	FAIMoveRequest AIMoverequest;
+	//	AIMoverequest.SetGoalActor(PlayerUnit);	//What to move towards
+	//	AIMoverequest.SetAcceptanceRadius(25.f);	//How close before stop
 
-		//https://docs.unrealengine.com/en-US/API/Runtime/Engine/AI/Navigation/FNavPathSharedPtr/index.html
-		FNavPathSharedPtr NavPath;	//Will contain all location nodes for the path
+	//	//https://docs.unrealengine.com/en-US/API/Runtime/Engine/AI/Navigation/FNavPathSharedPtr/index.html
+	//	FNavPathSharedPtr NavPath;	//Will contain all location nodes for the path
 
-		AIController->MoveTo(AIMoverequest, &NavPath);
+	//	AIController->MoveTo(AIMoverequest, &NavPath);
 
-		// **************** this just shows us the path *********************
-		//auto guesses the type for us
-		auto PathPoints = NavPath->GetPathPoints();
+	//	// **************** this just shows us the path *********************
+	//	//auto guesses the type for us
+	//	auto PathPoints = NavPath->GetPathPoints();
 
-		for (auto Point : PathPoints)
-		{
-			FVector Location = Point.Location;
-			UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
-		}
-	}
+	//	for (auto Point : PathPoints)
+	//	{
+	//		FVector Location = Point.Location;
+	//		UKismetSystemLibrary::DrawDebugSphere(this, Location, 25.f, 8, FLinearColor::Green, 3, 0.5f);
+	//	}
+	//}
 }
