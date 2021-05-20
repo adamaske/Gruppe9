@@ -3,7 +3,7 @@
 
 #include "EnemyBullet.h"
 #include "GameFrameWork/ProjectileMovementComponent.h"
-
+#include "PlayerUnit.h"
 
 
 AEnemyBullet::AEnemyBullet()
@@ -18,5 +18,11 @@ void AEnemyBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* O
 	int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Log, TEXT("Enemy bullet hit something"));
+	if (OtherActor->IsA(APlayerUnit::StaticClass())) {
+		APlayerUnit* unit = Cast<APlayerUnit>(OtherActor);
 
+		if (unit) {
+			unit->TakeDamage(damage);
+		}
+	}
 }

@@ -22,5 +22,8 @@ void AControlPanel::InteractWithPlayer(APlayerUnit* player)
 {
 	//Called when the player presses the interact key
 	UE_LOG(LogTemp, Log, TEXT("Player interacted with me"));
-	MyTurret->IAmActive = false;
+	if (MyTurret) {
+		MyTurret->IAmActive = false;
+	}
+	
 }

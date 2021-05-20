@@ -4,6 +4,7 @@
 #include "TurretUnit.h"
 #include "PlayerUnit.h"
 #include "EnemyBullet.h"
+#include "Kismet/GameplayStatics.h"
 ATurretUnit::ATurretUnit()
 {
 	RootComponent = CreateDefaultSubobject<UStaticMeshComponent>(TEXT("RootComp"));
@@ -20,6 +21,7 @@ ATurretUnit::ATurretUnit()
 void ATurretUnit::BeginPlay()
 {
 	Super::BeginPlay();
+	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
 }
 
 
@@ -27,17 +29,22 @@ void ATurretUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 	// checks if playerunit exist to avoid hard crash, and player distance
-		if (!PlayerUnit || PlayerDistance() > TurretRange)
-		{
+	if (!IAmActive) {
 		return;
-		}
-		// rotates the mesh of the turret to face player
-		TurretRotate(PlayerUnit->GetActorLocation());
+	}
+	if (!PlayerUnit || PlayerDistance() > TurretRange)
+	{
+		return;
+	}
+
+	// rotates the mesh of the turret to face player
+	TurretRotate(PlayerUnit->GetActorLocation());
+	CanShoot(DeltaTime);
 }
 
 float ATurretUnit::PlayerDistance()
 {
-	return 0.0f;
+	return FVector::Distance(PlayerUnit->GetActorLocation(), GetActorLocation());
 }
 
 
@@ -52,9 +59,13 @@ void ATurretUnit::TurretFire()
 			AEnemyBullet* TempBullet = GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletClass, BulletSpawnLocation, BulletSpawnRotation);
 	
 			//Makes it so that the bullet doesnt damage the turret
-			//TempBullet->SetOwner(this);
+			TempBullet->SetOwner(this);
+			UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
 		}
-		UE_LOG(LogTemp, Warning, TEXT("fire!!!"));
+		else {
+			UE_LOG(LogTemp, Warning, TEXT("No EnemyBulletClass"));
+		}
+		
 }
 
 void ATurretUnit::TurretRotate(FVector LookAtTarget)
@@ -65,6 +76,7 @@ void ATurretUnit::TurretRotate(FVector LookAtTarget)
 		FVector StartLocation = TurretHeadMesh->GetComponentLocation();
 		
 		FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
+		RotateTurret.Yaw += 180;
 		TurretHeadMesh->SetWorldRotation(RotateTurret);
 	}
 }
@@ -72,20 +84,21 @@ void ATurretUnit::TurretRotate(FVector LookAtTarget)
 void ATurretUnit::HandleDestruction()
 {
 }
-void ATurretUnit::CanShoot()
+void ATurretUnit::CanShoot(float DeltaTime)
 {
 	//Chekcs if the player exist
 	if (!PlayerUnit)
 	{
 		return;
 	}
-
+	currentShootTime += DeltaTime;
 	//if player is in range, open fire
-	if (PlayerDistance() <= TurretRange && IAmActive)
+	if (PlayerDistance() <= TurretRange && IAmActive && currentShootTime > FireRate)
 	{
 		//fire
 		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit.
-		UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
+		//UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
 		TurretFire();
+		currentShootTime = 0;
 	}
 }
