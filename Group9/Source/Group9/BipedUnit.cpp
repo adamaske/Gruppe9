@@ -259,13 +259,13 @@ void ABipedUnit::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* Other
 void ABipedUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	AIController->MoveToActor(PlayerUnit, 700);
+	AIController->MoveToActor(PlayerUnit, 10);
 	//Dont do anything if tghere is no player refrence
 	if (!PlayerUnit)
 	{
 		return;
 	}
-
+	return;
 	//Gets location of player and biped to measure the distance between them
 	FVector currentPlayerLocal = PlayerUnit->GetActorLocation();
 	FVector currentBipedLocal = GetActorLocation();
