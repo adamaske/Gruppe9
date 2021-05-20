@@ -50,8 +50,8 @@ public:
 		float MinDistanceFromPlayerToSpawn{ 100 };
 
 	UPROPERTY(EditAnywhere, Category = "Enemies")
-		TSubclassOf<class AEnemyUnit> EnemyBlueprint;
-	TArray<AEnemyUnit*> AliveEnemies;
+		TSubclassOf<class ABipedUnit> EnemyBlueprint;
+	TArray<ABipedUnit*> AliveEnemies;
 
 	UPROPERTY(EditAnywhere, Category = "Rooms")
 		bool bFindDoorsAndRoomsOnBeginPlay{ 1 };

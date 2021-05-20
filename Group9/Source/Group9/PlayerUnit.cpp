@@ -20,6 +20,7 @@
 #include "Room.h"
 #include "Camera/CameraShake.h"
 #include "JournalTerminal.h"
+#include "BipedUnit.h"
 // Sets default values
 APlayerUnit::APlayerUnit()
 {
@@ -387,7 +388,18 @@ void APlayerUnit::AttackHit(UPrimitiveComponent* OverlappedComponent, AActor* Ot
 		return; 
 	}
 	//Find if the actor hit is an enemy
-	if (OtherActor->IsA(AEnemyUnit::StaticClass())) {
+	if (OtherActor->IsA(ABipedUnit::StaticClass())) {
+		//Say you have already hit an enemy
+		bMeleeAttackHasHit = true;
+		//UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Enemy"));
+		//Cast the actor to a enemyunit
+		ABipedUnit* unit = Cast<ABipedUnit>(OtherActor);
+		//Call damage on enemy 
+		//unit->TakeDamage(MeleeAttackDamage);
+		//Juice
+		PlaySound(MeleeSound);
+		ShakeCamera(MeleeShake);
+	}else if (OtherActor->IsA(AEnemyUnit::StaticClass())) {
 		//Say you have already hit an enemy
 		bMeleeAttackHasHit = true;
 		//UE_LOG(LogTemp, Log, TEXT("Melee Attack Hit Enemy"));
