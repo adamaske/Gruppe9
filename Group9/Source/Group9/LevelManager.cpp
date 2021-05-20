@@ -11,6 +11,7 @@
 #include "EnemySpawnPointUnit.h"
 #include "Room.h"
 #include "Door.h"
+#include "BipedUnit.h"
 // Sets default values
 ALevelManager::ALevelManager()
 {
@@ -187,8 +188,8 @@ void ALevelManager::DoSpawning() {
 			
 			//Store it in a actor
 			AActor* currentSpawnPoint = AvailableSpawnPoints[newIndex];
-			AEnemyUnit* newEnemy = world->SpawnActor<AEnemyUnit>(EnemyBlueprint, currentSpawnPoint->GetActorLocation(), FRotator(0.f, 0.f, 0.f));
-			newEnemy->PlayerUnit = PlayerUnit;
+			ABipedUnit* newEnemy = world->SpawnActor<ABipedUnit>(EnemyBlueprint, currentSpawnPoint->GetActorLocation(), FRotator(0.f, 0.f, 0.f));
+			//newEnemy->PlayerUnit = PlayerUnit;
 			//Add it to alive enemies
 			AliveEnemies.Add(newEnemy);
 			//Increase enemy count

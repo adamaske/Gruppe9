@@ -3,6 +3,7 @@
 
 #include "PlayerBullet.h"
 #include "EnemyUnit.h"
+#include "BipedUnit.h"
 #include "PlayerUnit.h"
 #include "InteractableUnit.h"
 void APlayerBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, 
@@ -13,6 +14,11 @@ void APlayerBullet::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* 
 		AEnemyUnit* unit = Cast<AEnemyUnit>(OtherActor);
 		UE_LOG(LogTemp, Log, TEXT("Player bullet hit enemy"));
 		unit->TakeDamage(damage);
+		this->Destroy();
+	}
+	else if (OtherActor->IsA(ABipedUnit::StaticClass())) {
+		ABipedUnit* unit = Cast<ABipedUnit>(OtherActor);
+
 		this->Destroy();
 	}
 	else if(OtherActor->IsA(APlayerUnit::StaticClass())){

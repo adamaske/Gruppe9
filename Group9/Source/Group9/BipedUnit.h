@@ -116,7 +116,7 @@ public:
 
 	bool bMeleeHit{ 0 };
 
-
+	bool bIsDead{ 0 };
 	UFUNCTION()
 		void MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 			UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex,
