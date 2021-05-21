@@ -16,13 +16,13 @@ ABipedUnit::ABipedUnit()
 {
  	// Set this character to call Tick() every frame.  You can turn this off to improve performance if you don't need it.
 	PrimaryActorTick.bCanEverTick = true;
-
+	// sets movement speed of character
 	GetCharacterMovement()->MaxWalkSpeed = 350.f;
-
+	//Constructor for the normal melee attack collider 
 	MeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("MeleeCollider"));
 	MeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedUnit::MeleeHit);
 	MeleeBox->SetupAttachment(GetRootComponent());
-
+	//Collider for dash attack 
 	DashMeleeBox = CreateDefaultSubobject<UBoxComponent>(TEXT("DashCollider"));
 	DashMeleeBox->OnComponentBeginOverlap.AddDynamic(this, &ABipedUnit::DashHit);
 	DashMeleeBox->SetupAttachment(DashMeleeBox);
@@ -31,37 +31,13 @@ ABipedUnit::ABipedUnit()
 void ABipedUnit::BeginPlay()
 {
 	Super::BeginPlay();
-
+	//retrieves the AIController
 	AIController = Cast<AAIController>(GetController());
-
+	//retrives player unit 
 	PlayerUnit = Cast<APlayerUnit>(UGameplayStatics::GetPlayerCharacter(this, 0));
 	MeleeBox->SetGenerateOverlapEvents(false);
 	DashMeleeBox->SetGenerateOverlapEvents(false);
 }
-
-/*void  ABipedUnit::MoveUnit(FVector LookAtTarget)
-{
-	rotates to face player
-	FVector FaceTarget = FVector(LookAtTarget.X, LookAtTarget.Y, GetActorLocation().Z);
-	FVector StartLocation = GetActorLocation();
-
-	FRotator RotateBiped = FVector(FaceTarget - StartLocation).Rotation();
-	SetActorRotation(RotateBiped);
-
-	//move to player
-	LookAtTarget.Z = GetActorLocation().Z;
-	FVector NewDirection = LookAtTarget - GetActorLocation();
-	NewDirection.Normalize();
-
-	SetActorRotation(NewDirection.Rotation());
-
-	FVector MoveVector = GetActorLocation() + GetActorForwardVector() * movementSpeed * 0.1;
-	SetActorLocation(MoveVector);
-
-}*/
-
-
-
 void ABipedUnit::CloseMeleeAttack(float DeltaTime)
 {
 	//finds how much has gone to determine the attack rate
@@ -137,46 +113,7 @@ void ABipedUnit::MeleeHit(UPrimitiveComponent* OverlappedComponent, AActor* Othe
 		playerUnit->TakeDamage(MeleeDamage);
 	}
 }
-
-/*void ABipedUnit::SphereOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
-{
-	PlayerUnit = Cast<APlayerUnit>(OtherActor);
-	if (PlayerUnit)
-
-
-	{
-		//AIController->MoveToActor(PlayerUnit, 100);
-		MoveToPlayer();
-	}
-}
-
-/*void ABipedUnit::SphereOverlapEnd(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex)
-{
-	PlayerUnit = Cast<APlayerUnit>(OtherActor);
-	if (AIController && PlayerUnit)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Ends Overlap"));
-		AIController->StopMovement();
-	}
-}
-
-void ABipedUnit::MoveToPlayer()
-{
-	if (AIController)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Player Overlaps"));
-		FAIMoveRequest AIMoverequest;
-		AIMoverequest.SetGoalActor(PlayerUnit);
-		AIMoverequest.SetAcceptanceRadius(20.f);
-
-		FNavPathSharedPtr NavPath;
-
-		AIController->MoveTo(AIMoverequest, &NavPath);
-
-		
-	}
-}*/
-
+//take damage func from enemy unit
 void ABipedUnit::TakeDamage(float dmg)
 {
 	UE_LOG(LogTemp, Log, TEXT("Enemy took damage"));
@@ -196,6 +133,7 @@ void ABipedUnit::TakeDamage(float dmg)
 
 void ABipedUnit::DashMeleeAttack(float DeltaTime)
 {
+	//adds time for dash charge time
 	CurrentDashChargeTime += DeltaTime;
 	AnimIsCharging = true;
 	if (CurrentDashChargeTime >= DashChargeTime + DashMovementEnd)
@@ -207,7 +145,7 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 		{
 			DashMeleeBox->SetGenerateOverlapEvents(false);
 		}
-		//resets melee attack
+		//resets melee attack and BP checks
 		UE_LOG(LogTemp, Log, TEXT(" sets to false"));
 		bDashhit = false;
 		bIsCharging = false;
@@ -226,11 +164,17 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 	}
 	if (CurrentDashChargeTime >= DashChargeTime)
 	{
+		//dashing to true to apply damage
 		bIsDashing = true;
+		//BP anim bool
 		AnimIsDashing = true;
+		//sets target for dashing
 		FVector ChargeVector = GetActorLocation() + (GetActorForwardVector() * DashSpeed * DeltaTime);
+		//enitiates dashing
 		SetActorLocation(ChargeVector);
+		//Bp animation bool
 		AnimDasAttacking = true;
+		//if the collision on the dash collier is false set to true to damage player
 		if (DashMeleeBox->GetGenerateOverlapEvents() == false)
 		{
 			UE_LOG(LogTemp, Log, TEXT("sets overlap to true"));
@@ -239,7 +183,7 @@ void ABipedUnit::DashMeleeAttack(float DeltaTime)
 		}
 	}
 }
-
+//overlap event for dash to damage player
 void ABipedUnit::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComponent, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	UE_LOG(LogTemp, Log, TEXT("Dash hit event firing"));
@@ -263,7 +207,6 @@ void ABipedUnit::DashHit(UPrimitiveComponent* OverlappedComponent, AActor* Other
 void ABipedUnit::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
-	//AIController->MoveToActor(PlayerUnit, 200);
 	//Dont do anything if tghere is no player refrence
 	if (!PlayerUnit)
 	{
@@ -287,7 +230,7 @@ void ABipedUnit::Tick(float DeltaTime)
 		return;
 	}
 	
-	//UE_LOG(LogTemp, Log, TEXT("Current distance from player: %f"), MeleeRange);
+	//checks if the nit is close enough to normal melee attack
 	if (MeleeRange <= BipedStopRange)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
@@ -296,7 +239,7 @@ void ABipedUnit::Tick(float DeltaTime)
 		CloseMeleeAttack(DeltaTime);
 		return;
 	}
-
+	//checks if the unit can dash by distance check and if it has dashed
 	if (MeleeRange <= DashRange && !HasDashed)
 	{
 		//UE_LOG(LogTemp, Log, TEXT("Melee triggered"));
@@ -304,16 +247,11 @@ void ABipedUnit::Tick(float DeltaTime)
 		DashMeleeAttack(DeltaTime);
 		return;
 	}
-	//AIController->MoveToActor(PlayerUnit, 20);
 	// checks if playerunit exist to avoid hard crash, and player distance
 	if (bIsAttacking == false && bIsCharging == false)
 	{
 		AnimIsWalking = true;
 		AIController->MoveToActor(PlayerUnit, 1.f);
-		//AIController->
-		//UE_LOG(LogTemp, Log, TEXT("TOld to move"));
-		//MoveUnit(PlayerUnit->GetActorLocation());
-
 	}
 }
 float ABipedUnit::PlayerDistance()

@@ -53,9 +53,11 @@ void ATurretUnit::TurretFire()
 	//if statement to protecct form crashes in case somne commponents are missing
 		if (EnemyBulletClass)
 		{
+			//gets the vecot location of the bullet spawn point game object
 			FVector BulletSpawnLocation = EnemyBulletSpawnPoint->GetComponentLocation();
+			//gets the vector rotation of the bullet spawn point game object
 			FRotator BulletSpawnRotation = EnemyBulletSpawnPoint->GetComponentRotation();
-	
+			//pointer to bullet spawns the bullet at the retrieved vecotrs
 			AEnemyBullet* TempBullet = GetWorld()->SpawnActor<AEnemyBullet>(EnemyBulletClass, BulletSpawnLocation, BulletSpawnRotation);
 	
 			//Makes it so that the bullet doesnt damage the turret
@@ -70,20 +72,18 @@ void ATurretUnit::TurretFire()
 
 void ATurretUnit::TurretRotate(FVector LookAtTarget)
 {
+	//checks if the turret is active by control panel.cpp
 	if (IAmActive)
 	{
 		FVector AimAtTarget = FVector(LookAtTarget.X, LookAtTarget.Y, TurretHeadMesh->GetComponentLocation().Z);
 		FVector StartLocation = TurretHeadMesh->GetComponentLocation();
-		
+		//rotates 
 		FRotator RotateTurret = FVector(AimAtTarget - StartLocation).Rotation();
 		RotateTurret.Yaw += 180;
 		TurretHeadMesh->SetWorldRotation(RotateTurret);
 	}
 }
 
-void ATurretUnit::HandleDestruction()
-{
-}
 void ATurretUnit::CanShoot(float DeltaTime)
 {
 	//Chekcs if the player exist
@@ -92,11 +92,10 @@ void ATurretUnit::CanShoot(float DeltaTime)
 		return;
 	}
 	currentShootTime += DeltaTime;
-	//if player is in range, open fire
+	//if player is in range, open fire and IAmActive and current shoottime is higher than fire rate.
 	if (PlayerDistance() <= TurretRange && IAmActive && currentShootTime > FireRate)
 	{
 		//fire
-		//allways send out a raycast from bullet spawn point, if it DEOSNT hit the player it dont shoot innit.
 		//UE_LOG(LogTemp, Warning, TEXT("Turret in range!"));
 		TurretFire();
 		currentShootTime = 0;
