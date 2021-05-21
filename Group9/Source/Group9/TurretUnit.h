@@ -69,8 +69,4 @@ protected:
 	void TurretFire();
 	
 	void TurretRotate(FVector LookAtTarget);
-	
-	virtual void HandleDestruction() override;
-	
-
 };
