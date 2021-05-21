@@ -151,7 +151,9 @@ void ALevelManager::CheckPlayer()
 
 void ALevelManager::DoSpawning() {
 	UE_LOG(LogTemp, Log, TEXT("Called spawn function"));
-	
+	if (AliveEnemies.Num() == MaxEnemiesCount) {
+		return;
+	}
 	//Get all open rooms, dont want enemies to spawn behind closed doors
 	TArray<ARoom*> OpenRooms;
 	for (int i{ 0 }; i < Rooms.Num(); i++)
@@ -172,7 +174,7 @@ void ALevelManager::DoSpawning() {
 	}
 	
 	//Get the max new amount to spawn
-	float MaxNewEnemies = MaxEnemiesCount - CurrentEnemiesCount;
+	float MaxNewEnemies = MaxEnemiesCount - AliveEnemies.Num();
 	//Decide new amount
 	float AmountNewToSpawn = FMath::RandRange(0.f, MaxNewEnemies);
 	//turn to int
