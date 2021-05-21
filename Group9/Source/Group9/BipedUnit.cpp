@@ -311,7 +311,7 @@ void ABipedUnit::Tick(float DeltaTime)
 		AnimIsWalking = true;
 		AIController->MoveToActor(PlayerUnit, 1.f);
 		//AIController->
-		UE_LOG(LogTemp, Log, TEXT("TOld to move"));
+		//UE_LOG(LogTemp, Log, TEXT("TOld to move"));
 		//MoveUnit(PlayerUnit->GetActorLocation());
 
 	}
